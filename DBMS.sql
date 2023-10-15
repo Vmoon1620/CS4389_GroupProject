@@ -92,3 +92,72 @@ INSERT INTO accounts (AccountID, FK_CustomerID, AccountBalance, AccountType) val
 
 -- @block
 select * from accounts;
+
+
+-- @block
+Create Table Transactions(
+    TranscationID CHAR(36) Not Null,
+    FK_AccountID CHAR(36),
+    TranscationTime TIME,
+    TranscationDate DATE,
+    TransactionType VARCHAR(50),
+    TranscationAmount FLOAT,
+    PRIMARY Key (TranscationID),
+    Foreign Key (FK_AccountID) References Accounts(AccountID)
+);
+
+-- @block
+INSERT INTO Transactions (TranscationID, FK_AccountID, TranscationTime, TranscationDate, TransactionType, TranscationAmount) values ('6698211-b9d0-44fb-9338-5a004999b32', '6547fea-8198-4fdd-9637-fd090d07779', '10:58:34', '2015-03-29', 'ATM', -76.48);
+/* oversight, we overlooker, accountID == fk_accountID */
+
+-- @block
+select * from Transactions;
+
+
+-- @block
+SELECT 
+    Transactions.TranscationID, 
+    Transactions.FK_AccountID, 
+    Transactions.TranscationTime, 
+    Transactions.TranscationDate, 
+    Transactions.TransactionType, 
+    Transactions.TranscationAmount,
+    Accounts.AccountBalance,
+    Accounts.AccountType
+FROM 
+    Transactions
+JOIN 
+    Accounts ON Transactions.FK_AccountID = Accounts.AccountID;
+
+
+
+-- @block
+SELECT 
+Customer.CustomerID,
+Customer.FirstName,
+Customer.LastName,
+Customer.DateOfBirth,
+Customer.SSN,
+Customer_Address.CustomerAddress,
+Customer_Address.AddressType,
+Customer_PhoneNumber.PhoneNumber,
+Customer_PhoneNumber.PhoneNumberType,
+Transactions.TranscationTime, 
+Transactions.TranscationDate, 
+Transactions.TransactionType, 
+Transactions.TranscationAmount,
+Accounts.AccountBalance,
+Accounts.AccountType
+
+FROM 
+Transactions
+JOIN 
+Accounts ON Transactions.FK_AccountID = Accounts.AccountID
+JOIN 
+Customer ON Accounts.FK_CustomerID = Customer.CustomerID
+JOIN 
+Customer_Address ON Customer.CustomerID = Customer_Address.FK_CustomerAddress
+JOIN 
+Customer_PhoneNumber ON Customer.CustomerID = Customer_PhoneNumber.FK_CustomerPhoneNumber;
+
+
