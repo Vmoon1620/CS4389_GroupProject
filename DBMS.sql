@@ -161,3 +161,60 @@ JOIN
 Customer_PhoneNumber ON Customer.CustomerID = Customer_PhoneNumber.FK_CustomerPhoneNumber;
 
 
+
+-- @block
+CREATE TABLE Users (
+    UserID CHAR(36) Not Null,
+    UserLogin VARCHAR(50),
+    UserPassword VARCHAR(50),
+    FK_CustomerID CHAR(36),
+    UserType VARCHAR(10),
+    PRIMARY Key (UserID),
+    Foreign Key (FK_CustomerID) References Customer (CustomerID)
+);
+
+
+
+-- @block
+INSERT INTO users (UserID, UserLogin, UserPassword, FK_CustomerID, UserType) values ('xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx','jcorker0', 'kO7%5,!?', '994cd3ba-16a0-417a-922f-02ae4391787a', 'User')
+
+
+-- @block
+INSERT INTO users (UserID, UserLogin, UserPassword, FK_CustomerID, UserType) values ('zzzzzzzz-zzzz-zzzz-zzzzzzzzzzzz-','jake12', 'jakepassword', NULL, 'User')
+
+
+-- @block
+select * from users;
+
+
+
+SELECT 
+    Customer.CustomerID,
+    Customer.FirstName,
+    Customer.LastName,
+    Customer.DateOfBirth,
+    Customer.SSN,
+    Customer_Address.CustomerAddress,
+    Customer_Address.AddressType,
+    Customer_PhoneNumber.PhoneNumber,
+    Customer_PhoneNumber.PhoneNumberType,
+    Users.UserLogin,
+    Users.UserPassword,
+    Accounts.AccountBalance,
+    Accounts.AccountType,
+    Transactions.TranscationTime, 
+    Transactions.TranscationDate, 
+    Transactions.TransactionType, 
+    Transactions.TranscationAmount
+FROM 
+    Customer
+JOIN 
+    Customer_Address ON Customer.CustomerID = Customer_Address.FK_CustomerAddress
+JOIN 
+    Customer_PhoneNumber ON Customer.CustomerID = Customer_PhoneNumber.FK_CustomerPhoneNumber
+JOIN 
+    Users ON Customer.CustomerID = Users.FK_CustomerID
+JOIN 
+    Accounts ON Customer.CustomerID = Accounts.FK_CustomerID
+LEFT JOIN
+    Transactions ON Accounts.AccountID = Transactions.FK_AccountID;
