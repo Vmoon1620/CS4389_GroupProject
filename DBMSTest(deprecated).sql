@@ -1,10 +1,10 @@
 Create Table Customer(
     CustomerID CHAR(36) Not Null,
-     FirstName VARCHAR(50),
-     LastName VARCHAR(50),
-     DateOfBirth DATE,
-     SSN CHAR (11),
-     PRIMARY Key (CustomerID)
+    FirstName VARCHAR(50),
+    LastName VARCHAR(50),
+    DateOfBirth DATE,
+    SSN CHAR (11),
+    PRIMARY Key (CustomerID)
 )
 
 
@@ -107,7 +107,7 @@ Create Table Transactions(
 );
 
 -- @block
-INSERT INTO Transactions (TranscationID, FK_AccountID, TranscationTime, TranscationDate, TransactionType, TranscationAmount) values ('6698211-b9d0-44fb-9338-5a004999b32', '6547fea-8198-4fdd-9637-fd090d07779', '10:58:34', '2015-03-29', 'ATM', -76.48);
+INSERT INTO Transactions (TranscationID, FK_AccountID, TranscationTime, TranscationDate, TransactionType, TranscationAmount) values ('6698211-b9d0-44fb-9338-5a004999b32', 'eb29704-d3a8-4918-9a29-0dd078b5803', '10:58:34', '2015-03-29', 'ATM', -76.48);
 /* oversight, we overlooker, accountID == fk_accountID */
 
 -- @block
