@@ -29,7 +29,7 @@ Create Table Accounts(
     FK_CustomerID CHAR(36), 
     AccountBalance FLOAT,
     AccountType VARCHAR(50),
-    PRIMARY Key (AccountID),
+    PRIMARY Key (AccountID, AccountType), /* also made this change since its also a multivariate. Logic is a customer can have multiple accounts*/
     Foreign Key (FK_CustomerID) References Customer(CustomerID)
 );
 
@@ -40,12 +40,12 @@ Create Table Transactions(
     TranscationDate DATE,
     TransactionType VARCHAR(50),
     TranscationAmount FLOAT,
-    PRIMARY Key (TranscationID),
+    PRIMARY Key (TranscationID,TransactionType),/*modified */
     Foreign Key (FK_AccountID) References Accounts(AccountID)
 );
 
 CREATE TABLE Users (
-    UserID CHAR(36) Not Null,
+    UserID CHAR(36) Not Null, /* this record is new to follow the formatting of the other tables */
     UserLogin VARCHAR(50),
     UserPassword VARCHAR(50),
     FK_CustomerID CHAR(36),
