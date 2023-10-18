@@ -11,7 +11,7 @@ Create Table Customer_Address(
     FK_CustomerAddress CHAR(36) Not Null,
     CustomerAddress VARCHAR(80),
     AddressType VARCHAR(50),
-    PRIMARY Key (FK_CustomerAddress, Customer_Address), /* since this is multivalue attribute we have the Primary key as follows */
+    PRIMARY Key (FK_CustomerAddress, CustomerAddress), /* since this is multivalue attribute we have the Primary key as follows */
     Foreign Key (FK_CustomerAddress) References Customer (CustomerID) 
 );
 
