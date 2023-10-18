@@ -11,7 +11,7 @@ Create Table Customer_Address(
     FK_CustomerAddress CHAR(36) Not Null,
     CustomerAddress VARCHAR(80),
     AddressType VARCHAR(50),
-    PRIMARY Key (FK_CustomerAddress),
+    PRIMARY Key (FK_CustomerAddress, Customer_Address), /* since this is multivalue attribute we have the Primary key as follows */
     Foreign Key (FK_CustomerAddress) References Customer (CustomerID) 
 );
 
@@ -19,7 +19,7 @@ CREATE Table Customer_PhoneNumber(
     FK_CustomerPhoneNumber CHAR(36) Not Null,
     PhoneNumber VARCHAR(50),
     PhoneNumberType VARCHAR(50),
-    PRIMARY Key (FK_CustomerPhoneNumber),
+    PRIMARY Key (FK_CustomerPhoneNumber, PhoneNumber), /* Similarly bc this table is multivalued, it has two attributes tied for its primary keys */
     Foreign Key (FK_CustomerPhoneNumber) References Customer (CustomerID) 
 
 );
@@ -85,8 +85,3 @@ JOIN
     Accounts ON Customer.CustomerID = Accounts.FK_CustomerID
 LEFT JOIN
     Transactions ON Accounts.AccountID = Transactions.FK_AccountID;
-
-
-
-
-
