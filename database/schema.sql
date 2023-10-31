@@ -5,7 +5,7 @@ USE Bank;
 DROP TABLE IF EXISTS Bank.Customer_Addresses;
 DROP TABLE IF EXISTS Bank.Customer_PhoneNumbers;
 DROP TABLE IF EXISTS Bank.Transactions;
-DROP TABLE IF EXISTS Bank.Accounts;
+DROP TABLE IF EXISTS Bank.Customer_Accounts;
 DROP TABLE IF EXISTS Bank.Users;
 DROP TABLE IF EXISTS Bank.Customers;
 
@@ -14,14 +14,11 @@ CREATE TABLE Bank.Customers (
     fname VARCHAR(50),
     lname VARCHAR(50),
     dob DATE,
-    ssn VARBINARY (50) NOT NULL,
     CONSTRAINT pk_customer_id PRIMARY KEY (customer_id)
-
-    -- Customer ssn should be encryted. Store as raw binary, or can also base64 encoded to store as varchar.
 );
 
 CREATE TABLE Bank.Users (
-    username VARBINARY(100) NOT NULL,
+    username VARCHAR(100) NOT NULL,
     password VARBINARY(100) NOT NULL,
     customer_id CHAR(36),
     user_type VARCHAR(10),
@@ -67,7 +64,7 @@ CREATE TABLE Bank.Customer_Phone_Numbers (
     -- Phone numbers are multivalued fields -> multiple allowed per customer.
 );
 
-CREATE TABLE Bank.Accounts (
+CREATE TABLE Bank.Customer_Accounts (
     account_id CHAR(36) NOT NULL,
     customer_id CHAR(36), 
     balance DECIMAL(65, 2) NOT NULL,
@@ -94,7 +91,7 @@ CREATE TABLE Bank.Transactions (
     CONSTRAINT pk_transactions PRIMARY KEY (transaction_id),
     CONSTRAINT fk_transactions_account 
         FOREIGN KEY (account_id) 
-        REFERENCES Bank.Accounts(account_id)
+        REFERENCES Bank.Customer_Accounts(account_id)
         ON DELETE SET NULL,
     CONSTRAINT chk_amount_not_zero CHECK (amount != 0)
 
@@ -112,7 +109,7 @@ CREATE PROCEDURE on_new_transaction(
     account_id CHAR(36), 
     amount DECIMAL(65, 2)
 ) BEGIN
-    UPDATE Bank.Accounts AS accounts
+    UPDATE Bank.Customer_Accounts AS accounts
     SET accounts.balance = accounts.balance + amount
     WHERE accounts.account_id = account_id;
 END $$
@@ -122,7 +119,7 @@ CREATE PROCEDURE on_update_transaction(
     old_amount DECIMAL(65, 2), 
     new_amount DECIMAL(65, 2)
 ) BEGIN
-    UPDATE Bank.Accounts AS accounts
+    UPDATE Bank.Customer_Accounts AS accounts
     SET accounts.balance = (accounts.balance - old_amount) + new_amount
     WHERE accounts.account_id = account_id;
 END$$
