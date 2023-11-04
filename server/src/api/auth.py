@@ -11,17 +11,19 @@ from ..db.common_operations import *
 def __redirectLogin(id: uuid):
     session.clear()
     session['user_id'] = id
-    return redirect(url_for('index'))
+    return "LOGIN SUCCESS" #redirect(url_for('index'))
 
 def onLogin(request: Request) -> t.Any:
-    username = request.form['username']
-    password = request.form['password']
+    username = request.form['_username']
+    password = request.form['_password']
     
     try:
         db = database.get()
         record = getUserByName(db, username)
-        if (checkHash(record['password'], password)):
-            __redirectLogin(record[id])
+        passwdHash = str(record['password'], 'utf-8')
+
+        if (checkHash(passwdHash, password)):
+            return __redirectLogin(record['id'])
         else:
             raise Exception("Invalid Password")
         
@@ -29,7 +31,7 @@ def onLogin(request: Request) -> t.Any:
         print(f"Failed login attempt. Username: {username}.\n", err)
         
     flash("Login Failed.")
-    return render_template('auth/login.html')
+    return "LOGIN FAILED" #render_template('auth/login.html')
 
 def __validateRegistrationFilled(request: Request) -> str:
     error = None
@@ -60,7 +62,7 @@ def onRegister(request: Request) -> t.Any:
         except db.IntegrityError:
             error = f"User is already registered."
         else:
-            return redirect(url_for("auth.login"))
+            return "OK" #redirect(url_for("auth.login"))
         
     flash(error)
-    return render_template('auth/register.html')
+    return "BAD" #render_template('auth/register.html')

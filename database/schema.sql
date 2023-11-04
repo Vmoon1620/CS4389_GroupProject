@@ -18,8 +18,8 @@ CREATE TABLE Bank.Customers (
 );
 
 CREATE TABLE Bank.Users (
-    username VARCHAR(100) NOT NULL,
-    password VARBINARY(100) NOT NULL,
+    username VARCHAR(512) NOT NULL,
+    password VARBINARY(512) NOT NULL,
     customer_id CHAR(36),
     user_type VARCHAR(10),
     CONSTRAINT pk_username PRIMARY KEY (username),

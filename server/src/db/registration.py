@@ -5,7 +5,7 @@ from werkzeug.security import generate_password_hash as hash
 class Registration:
 
     def __init__(self, form: ImmutableMultiDict[str, str]):
-        customer_id = uuid.uuid4()
+        customer_id = str(uuid.uuid4())
         hashed_pass = hash(form['_password'])
         
         self.customer_info: dict[str, str] = {
