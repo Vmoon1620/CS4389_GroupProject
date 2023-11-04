@@ -1,9 +1,18 @@
 import os
 import typing as t
 from flask import Flask
+from flask import CSRFProtect
+from flask import CORS
+
 
 from .db import database
 from . import views
+
+
+#setting up the csrf protection
+app = Flask(__name__)
+
+#setting up the CORS
 
 def loadConfig(app: Flask, config: t.Mapping[str, t.Any] | None) -> None:
     """
@@ -44,7 +53,10 @@ def create_app(config=None):
     """
     # create and configure the app
     app = Flask(__name__, instance_relative_config=True)
-    loadConfig(app, config)
+    csrf = CSRFProtect(app)
+    CORS(csrf)
+
+    loadConfig(CORS(csrf), config)
 
     # ensure the instance folder exists
     try:

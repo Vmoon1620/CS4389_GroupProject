@@ -23,3 +23,6 @@ def register():
     get = lambda: render_template('auth/register.html')
     post = lambda: authentication_handler.onRegister(request)
     return formView(request, get, post)
+
+
+#
