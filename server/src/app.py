@@ -26,7 +26,7 @@ def loadConfig(app: Flask, config: t.Mapping[str, t.Any] | None) -> None:
     if config is not None:
         app.config.from_mapping(config)
     else:
-        from .dev_config import Config
+        from .instance.config import Config
         app.config.from_object(Config)
 
 def setupDB(app: Flask):

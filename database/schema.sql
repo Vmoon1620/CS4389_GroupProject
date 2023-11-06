@@ -2,13 +2,6 @@ DROP SCHEMA IF EXISTS Bank;
 CREATE SCHEMA Bank;
 USE Bank;
 
-DROP TABLE IF EXISTS Bank.Customer_Addresses;
-DROP TABLE IF EXISTS Bank.Customer_PhoneNumbers;
-DROP TABLE IF EXISTS Bank.Transactions;
-DROP TABLE IF EXISTS Bank.Customer_Accounts;
-DROP TABLE IF EXISTS Bank.Users;
-DROP TABLE IF EXISTS Bank.Customers;
-
 CREATE TABLE Bank.Customers (
     customer_id CHAR(36) NOT NULL,
     fname VARCHAR(50),
@@ -98,9 +91,6 @@ CREATE TABLE Bank.Transactions (
     -- Keep transactions even if accounts are closed to maintain a paper trail.
     -- Transactions must be a non-zero amount.
 );
-
-DROP PROCEDURE IF EXISTS on_new_transaction;
-DROP PROCEDURE IF EXISTS on_update_transaction;
 
 -- Triggers associated with transactions to automatically update account balance and maintain integrity.
 -- Defines two different procedures, one for updates/deletes and another for inserts
