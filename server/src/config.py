@@ -11,6 +11,7 @@ load_dotenv(dotenv_path=_env_path / '.env')
 # --> create and store private values in .env
 class Config(object):
 
+    DEBUG = os.environ['DEBUG']             # Run server in debug or production             -> NEVER DEPLOY TO PRODUCTION WITH DEBUG = TRUE
     SECRET_KEY = os.environ['SECRET_KEY']   # Secret used by flask server internals         -> USE A SECURE RANDOM VALUE IN DEPLOYMENT
 
     DB_LANGUAGE = 'mysql'                   # what sql dialect to use
@@ -25,4 +26,4 @@ class Config(object):
     SESSION_PERMANENT = False               # don't maintain sessions on server shutdown
     SESSION_USE_SIGNER = True               # require sessions to be signed with server key
 
-    SESSION_URL = redis.from_url(os.environ['REDIS_URL']) # url redis storage is hosted at  -> KEEP REDIS HOST SECRET
+    SESSION_URL = redis.from_url(os.environ['REDIS_URL'])   # url redis storage is hosted at  -> KEEP REDIS HOST SECRET

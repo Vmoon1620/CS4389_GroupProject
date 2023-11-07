@@ -10,7 +10,7 @@ from ..db.common_operations import getUserByName
 def __redirectLogin(id: uuid) -> Response:
     session.clear()
     session['user_id'] = id
-    return "LOGIN SUCCESS" #redirect(url_for('index'))
+    return 'LOGIN SUCCESS' #redirect(url_for('index'))
 
 def __verifyLogin(username: str, password: str) -> Response:
         db = database.get()
@@ -29,7 +29,7 @@ def onLogin(request: Request) -> Response:
     try:
         return __verifyLogin(username, password)
     except Exception as err:
-        print(f"Failed login attempt. Username: {username}.\n", err)
+        print(f'Failed login attempt. Username: {username}.\n', err)
         
-    flash(msg="Unauthorized.", category='error')
-    return "LOGIN FAILED" #render_template('auth/login.html')
+    flash(message='Unauthorized.', category='error')
+    return 'LOGIN FAILED' #render_template('auth/login.html')

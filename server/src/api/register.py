@@ -37,5 +37,5 @@ def onRegister(request: Request) -> Any:
         else:
             return "OK" #redirect(url_for("auth.login"))
         
-    flash(msg=error, category='error')
+    flash(message=error, category='error')
     return "BAD" #render_template('auth/register.html')

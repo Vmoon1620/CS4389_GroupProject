@@ -1,4 +1,4 @@
-import typing as t
+from typing import Any
 from sqlalchemy import text, Row
 from flask_sqlalchemy import SQLAlchemy
 
@@ -22,10 +22,35 @@ def insertUser(db: SQLAlchemy, data: dict[str, str]) -> None:
     db.session.execute(text(query), data)
     db.session.commit()
 
-def getUserByName(db: SQLAlchemy, username: str) -> Row[t.Any]:
-    query = 'SELECT b.username AS user, b.user_type AS type, b.password AS password, b.customer_id AS id ' \
+def getUserByName(db: SQLAlchemy, username: str) -> dict[str, Any]:
+    query = 'SELECT b.username AS user, b.password AS password, b.customer_id AS id ' \
             'FROM Bank.Users AS b ' \
             'WHERE b.username = :_name;'
 
     result = db.session.execute(text(query), {'_name': username})
     return result.one()._asdict()
+
+def getUserByID(db: SQLAlchemy, id: str) -> dict[str, Any]:
+    query = """
+            SELECT
+                b.username AS user,
+                c.first_name, c.last_name, c.date_of_birth,
+                a.address, 
+                p.phone_number
+            FROM Bank.Users AS b 
+            NATURAL JOIN (
+                SELECT c_tmp.fname AS first_name, c_tmp.lname AS last_name, c_tmp.dob AS date_of_birth, c_tmp.customer_id
+                FROM Bank.Customers AS c_tmp
+            ) AS c 
+            NATURAL JOIN (
+                SELECT a_tmp.address, a_tmp.customer_id
+                FROM Bank.Customer_Addresses AS a_tmp
+            ) AS a 
+            NATURAL JOIN (
+                SELECT p_tmp.phone_number, p_tmp.customer_id AS id
+                FROM Bank.Customer_Phone_Numbers AS p_tmp
+            ) AS p
+            WHERE b.customer_id = :_id;
+            """
+    result = db.session.execute(text(query), {'_id': id})
+    return result.first()._asdict()

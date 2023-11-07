@@ -4,9 +4,10 @@ import typing as t
 from flask import Flask
 from flask_cors import CORS
 from flask_session import Session
-from flask_wtf.csrf import CSRFProtect, CSRFError
+from flask_wtf.csrf import CSRFProtect, generate_csrf
+from flask.wrappers import Response
 
-from . import csrf, views
+from . import views
 from .db import database
 
 csrf = CSRFProtect()
@@ -72,6 +73,12 @@ def create_app(config=None):
     Session(app)                        # setup server-side session storage
     setupDB(app)                        # set up the database object
     app.register_blueprint(views.auth)  # register URL mappings
+
+    @app.after_request
+    def add_csrf_cookie(response: Response):
+        if response.status_code in range(200, 400) and not response.direct_passthrough:
+            response.set_cookie("XSRF-TOKEN", generate_csrf(), secure=True)
+        return response
 
     return app
 
