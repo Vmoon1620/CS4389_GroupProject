@@ -1,18 +1,15 @@
 import os
 import typing as t
+
 from flask import Flask
-from flask import CSRFProtect
-from flask import CORS
+from flask_cors import CORS
+from flask_session import Session
+from flask_wtf.csrf import CSRFProtect, CSRFError
 
-
+from . import csrf, views
 from .db import database
-from . import views
 
-
-#setting up the csrf protection
-app = Flask(__name__)
-
-#setting up the CORS
+csrf = CSRFProtect()
 
 def loadConfig(app: Flask, config: t.Mapping[str, t.Any] | None) -> None:
     """
@@ -26,10 +23,17 @@ def loadConfig(app: Flask, config: t.Mapping[str, t.Any] | None) -> None:
     if config is not None:
         app.config.from_mapping(config)
     else:
-        from .instance.config import Config
+        from .config import Config
         app.config.from_object(Config)
 
 def setupDB(app: Flask):
+    """
+    Initialize the database from a URI constructed
+    by config values.
+
+    Args:
+        app (Flask) - the application instance
+    """
     dialect = app.config['DB_LANGUAGE']
     driver = app.config['DB_CONNECTOR']
     user = app.config['DB_USER']
@@ -53,10 +57,11 @@ def create_app(config=None):
     """
     # create and configure the app
     app = Flask(__name__, instance_relative_config=True)
-    csrf = CSRFProtect(app)
-    CORS(csrf)
+    loadConfig(app, config)
 
-    loadConfig(CORS(csrf), config)
+    # must be done after config is loaded -> use SECRET_KEY
+    csrf.init_app(app)
+    CORS(app)
 
     # ensure the instance folder exists
     try:
@@ -64,15 +69,12 @@ def create_app(config=None):
     except OSError:
         pass
 
-    # set up the database object
-    setupDB(app)
-
-    # register URL mappings
-    app.register_blueprint(views.auth)
+    Session(app)                        # setup server-side session storage
+    setupDB(app)                        # set up the database object
+    app.register_blueprint(views.auth)  # register URL mappings
 
     return app
 
 if (__name__ == '__main__'):
     app = create_app()
     app.run(debug=True, host='0.0.0.0', port=5000)
-    #app.run(debug=True, host='localhost', port=5000)

@@ -1,6 +1,7 @@
 # ignore python environment and server instance
 .project_env/
 instance/
+.env
 
 # ignore precompiled python headers and files
 *.pyc
