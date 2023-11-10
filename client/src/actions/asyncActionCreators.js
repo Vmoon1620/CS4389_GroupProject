@@ -13,23 +13,41 @@ import {
 import * as actionTypes from './action_constants'
 
 import formatMoney from '../formatMoney'
-import { CALL_API } from '../middleware/api'
+import { CALL_API, buildFetchConfig } from '../middleware/api'
 
+const onValidateLogin = credentials => {
+    let formdata = new FormData()
+    formdata.append("_username", credentials.username)
+    formdata.append("_password", credentials.password)
+    let config = buildFetchConfig('POST', formdata)
+    try {
+        let isValid = fetch("/auth/login", config).then((response) => {
+            const data = response.data;
+            console.log("Login response: " + data)
+            return response.data['message'] === 'SUCCESS'
+        });
+        return isValid === true;
+    } 
+    catch(e) {
+        console.log(e)
+        return false;
+    }
+} 
 const validateLoginRequest = credentials => {
+
     let result = {
-        isValid: true,
+        isValid: false,
         usernameValidationMessage: null,
         passwordValidationMessage: null
     }
 
-    if (!credentials.username) {
-        result.isValid = false
-        result.usernameValidationMessage = 'Username is required'
-    }
-
-    if (!credentials.password) {
-        result.isValid = false
-        result.passwordValidationMessage = 'Password is required'
+    if (credentials.username && credentials.password) 
+        result.isValid = onValidateLogin(credentials)
+    else {
+        if (!credentials.username) 
+            result.usernameValidationMessage = 'Username is required'
+        if (!credentials.password) 
+            result.passwordValidationMessage = 'Password is required'
     }
 
     return result
