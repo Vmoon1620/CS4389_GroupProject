@@ -22,7 +22,7 @@ const onValidateLogin = credentials => {
     let config = buildFetchConfig('POST', formdata)
     try {
         let isValid = fetch("/auth/login", config).then((response) => {
-            const data = response.data;
+            const data = JSON.parse(response.data);
             console.log("Login response: " + data)
             return response.data['message'] === 'SUCCESS'
         });

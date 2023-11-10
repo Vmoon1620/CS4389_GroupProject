@@ -4,8 +4,8 @@ import redis
 from dotenv import load_dotenv
 from pathlib import Path
 
-_env_path = Path(os.path.abspath(__file__)).resolve().parent.parent
-load_dotenv(dotenv_path=_env_path / '.env')
+BASE_DIR = Path(__file__).resolve().parent.parent.parent
+load_dotenv(dotenv_path=BASE_DIR / 'server/.env')
 
 # ***** IMPORTANT KEEP THESE VALUES SECRET IN ACTUAL DEPLOYMENT **** 
 # --> create and store private values in .env
@@ -26,4 +26,4 @@ class Config(object):
     SESSION_PERMANENT = False               # don't maintain sessions on server shutdown
     SESSION_USE_SIGNER = True               # require sessions to be signed with server key
 
-    SESSION_URL = redis.from_url(os.environ['REDIS_URL'])   # url redis storage is hosted at  -> KEEP REDIS HOST SECRET
+    SESSION_URL = redis.from_url(os.environ['REDIS_URL'])   # where redis storage is hosted -> KEEP REDIS HOST SECRET

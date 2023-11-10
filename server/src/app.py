@@ -1,5 +1,5 @@
 import os
-import typing as t
+from typing import Any, Mapping
 
 from flask import Flask
 from flask_cors import CORS
@@ -9,31 +9,34 @@ from flask.wrappers import Response
 
 from . import views
 from .db import database
+from .config import BASE_DIR, Config
 
 csrf = CSRFProtect()
 
-def loadConfig(app: Flask, config: t.Mapping[str, t.Any] | None) -> None:
-    """
-    Load the application config from the value passed in. Load
-    default from config.py otherwise.
+def loadConfig(app: Flask, config: Mapping[str, Any] | None) -> None:
+    """ 
+    ---------------------------------------------------------------------------
+    Load the application config from the value passed in. Load default from 
+    config.py otherwise.
 
     Args:
         app (Flask) - the application instance
         config (Mapping[str, Any] | None) - the config mapping to load.
+    ---------------------------------------------------------------------------
     """
     if config is not None:
         app.config.from_mapping(config)
     else:
-        from .config import Config
         app.config.from_object(Config)
 
 def setupDB(app: Flask):
     """
-    Initialize the database from a URI constructed
-    by config values.
+    ---------------------------------------------------------------------------
+    Initialize the database from a URI constructed by config values.
 
     Args:
-        app (Flask) - the application instance
+        app (Flask) - the application instance.
+    ---------------------------------------------------------------------------
     """
     dialect = app.config['DB_LANGUAGE']
     driver = app.config['DB_CONNECTOR']
@@ -49,20 +52,68 @@ def setupDB(app: Flask):
 
     database.init(app)
 
-def create_app(config=None):
+def registerRoutes(app: Flask) -> None:    
+    """ 
+    ---------------------------------------------------------------------------
+    Register all routes and callbacks for the application.
+
+    Args:
+        app (Flask) - the application instance
+    ---------------------------------------------------------------------------
     """
+    # register a callback to append csrf token to valid requests
+    @app.after_request
+    def add_csrf_cookie(response: Response):
+        if response.status_code in range(200, 400) and not response.direct_passthrough:
+            response.set_cookie('XSRF-TOKEN', generate_csrf(), secure=True)
+        return response
+    
+    # register the base route to server main page
+    @app.route('/')
+    def index():
+        return Response(app.send_static_file('index.html'))
+    
+    app.register_blueprint(views.auth)  # register URL mappings for authentication
+    
+def initializeApp(app: Flask, config: Mapping[str, Any] | None) -> None:
+    """ 
+    ---------------------------------------------------------------------------
+    Load the application config and initialize database, security features,
+    settings and routes.
+
+    Args:
+        app (Flask) - the application instance
+        config (Mapping[str, Any] | None) - the config mapping to load.
+    ---------------------------------------------------------------------------
+    """
+    loadConfig(app, config)
+    
+    # must be done after config is loaded -> uses SECRET_KEY
+    csrf.init_app(app)                  # setup csrf protection
+    CORS(app)                           # set up cross origin whitelist -> not needed, REMOVE LATER
+    Session(app)                        # setup server-side session storage
+    setupDB(app)                        # set up the database object
+    registerRoutes(app)                 # register urls
+    
+def create_app(config=None):
+    """ 
+    --------------------------------------------------------------------------
     Create the instance of the application server with the given config.
 
     Args:
         config (Mapping[str, Any] | None) - the configuration to load.
+    --------------------------------------------------------------------------
     """
-    # create and configure the app
-    app = Flask(__name__, instance_relative_config=True)
-    loadConfig(app, config)
+    # get the path the the React build files
+    path = BASE_DIR / 'client/build'
 
-    # must be done after config is loaded -> use SECRET_KEY
-    csrf.init_app(app)
-    CORS(app)
+    # create and configure the app
+    app = Flask(
+        __name__, 
+        instance_relative_config=True, 
+        static_folder=path,
+        static_url_path='/'
+    )
 
     # ensure the instance folder exists
     try:
@@ -70,18 +121,9 @@ def create_app(config=None):
     except OSError:
         pass
 
-    Session(app)                        # setup server-side session storage
-    setupDB(app)                        # set up the database object
-    app.register_blueprint(views.auth)  # register URL mappings
-
-    @app.after_request
-    def add_csrf_cookie(response: Response):
-        if response.status_code in range(200, 400) and not response.direct_passthrough:
-            response.set_cookie("XSRF-TOKEN", generate_csrf(), secure=True)
-        return response
-
+    initializeApp(app, config)
     return app
 
 if (__name__ == '__main__'):
     app = create_app()
-    app.run(debug=True, host='0.0.0.0', port=5000)
+    app.run(host='0.0.0.0', port=5000)
