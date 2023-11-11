@@ -13,13 +13,14 @@ import {
 import * as actionTypes from './action_constants'
 
 import formatMoney from '../formatMoney'
-import { CALL_API, buildFetchConfig } from '../middleware/api'
+import { CALL_API, getFormHeaders } from '../middleware/api'
 
 const onValidateLogin = credentials => {
     let formdata = new FormData()
     formdata.append("_username", credentials.username)
     formdata.append("_password", credentials.password)
-    let config = buildFetchConfig('POST', formdata)
+
+    let config = getFormHeaders('POST', formdata)
     try {
         let isValid = fetch("/auth/login", config).then((response) => {
             const data = JSON.parse(response.data);

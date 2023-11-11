@@ -1,5 +1,5 @@
 import uuid
-from flask import (Response, Request, session, url_for)
+from flask import (Response, Request, session)
 from werkzeug.security import check_password_hash as checkHash
 from ..db import database
 from ..db.common_operations import getUserByName
@@ -20,6 +20,7 @@ def __verifyLogin(username: str, password: str) -> Response:
             raise Exception("Invalid Password.")
         
 def onLogin(request: Request) -> Response:
+    print([i for i in request.form])
     username = request.form['_username']
     password = request.form['_password']
     

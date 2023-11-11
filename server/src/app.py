@@ -1,7 +1,7 @@
 import os
 from typing import Any, Mapping
 
-from flask import Flask
+from flask import Flask, redirect, url_for, render_template
 from flask_cors import CORS
 from flask_session import Session
 from flask_wtf.csrf import CSRFProtect, generate_csrf
@@ -64,15 +64,14 @@ def registerRoutes(app: Flask) -> None:
     # register a callback to append csrf token to valid requests
     @app.after_request
     def add_csrf_cookie(response: Response):
-        if response.status_code in range(200, 400) and not response.direct_passthrough:
-            response.set_cookie('XSRF-TOKEN', generate_csrf(), secure=True)
+        response.set_cookie('csrftoken', generate_csrf(), secure=True)
         return response
     
     # register the base route to server main page
     @app.route('/')
     def index():
-        return Response(app.send_static_file('index.html'))
-    
+        return app.send_static_file("index.html") #redirect(url_for('auth.login'))
+
     app.register_blueprint(views.auth)  # register URL mappings for authentication
     
 def initializeApp(app: Flask, config: Mapping[str, Any] | None) -> None:
@@ -105,14 +104,14 @@ def create_app(config=None):
     --------------------------------------------------------------------------
     """
     # get the path the the React build files
-    path = BASE_DIR / 'client/build'
+    path = BASE_DIR / 'client/build/'
 
     # create and configure the app
     app = Flask(
         __name__, 
         instance_relative_config=True, 
         static_folder=path,
-        static_url_path='/'
+        static_url_path=''
     )
 
     # ensure the instance folder exists
