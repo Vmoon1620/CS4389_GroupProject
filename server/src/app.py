@@ -8,6 +8,9 @@ from flask_wtf.csrf import CSRFProtect, generate_csrf
 from flask.wrappers import Response
 
 from . import views
+#registering account blueprint
+from .views import account
+
 from .db import database
 
 csrf = CSRFProtect()
@@ -73,6 +76,11 @@ def create_app(config=None):
     Session(app)                        # setup server-side session storage
     setupDB(app)                        # set up the database object
     app.register_blueprint(views.auth)  # register URL mappings
+    
+    
+    #Registering a view for account
+    app.register_blueprint(views.account)
+
 
     @app.after_request
     def add_csrf_cookie(response: Response):

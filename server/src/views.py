@@ -7,7 +7,13 @@ from .api import login as login_handler, register as registration_handler
 from .db import database
 from .db.common_operations import getUserByID
 
+#importing
+from .db.common_operations import getAccountInfoByCustomerID
+
 auth = Blueprint('auth', __name__, url_prefix='/auth')
+
+#adding blueprint fot account
+account = Blueprint('account', __name__, url_prefix='/account')
 
 def formView(request: request, get_response: Any, post_response: Any) -> Any:
     if (request.method == 'GET'):
@@ -47,4 +53,25 @@ def get_current_user():
         'Date of Birth': record['date_of_birth'],
         'Primary Address': record['address'],
         'Phone Number': record['phone_number']
+    })
+    
+#path for account    
+@account.route('/account', methods=['GET'])
+def get_account_info():
+    user_id = session.get('user_id')
+
+    if user_id is None:
+        return redirect(url_for('auth.login'))
+
+    db = database.get()
+    account_info = getAccountInfoByCustomerID(db, user_id)
+
+    return jsonify({
+        'ID': account_info['ID'],
+        'First Name': account_info['First Name'],
+        'Last Name': account_info['Last Name'],
+        'Date of Birth': account_info['Date of Birth'],
+        'Account ID': account_info['account_id'],
+        'Balance': account_info['balance'],
+        'Account Type': account_info['account_type']
     })
