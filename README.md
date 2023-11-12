@@ -82,7 +82,27 @@ Run the file setup.sh: <br>```$ source ./setup.sh```
 for Linux/MAC setup still.**
 
 This will establish a virtual python environment and all dependencies for the back-end server as
-well as install the React environment and dependencies.
+well as install the React environment and dependencies.<br>
+
+Lastly, create a local environment file, '.env' in the server directory. Any key/value pair
+put in this file will be automatically added to your environment variables on server startup.
+The Flask server needs at minimum these lines:<br>
+
+```
+DEBUG=True
+SECRET_KEY='<Your secret key here>'
+
+DB_HOST='<Your database host address>'
+DB_PORT=<Your database port number>
+DB_PASSWORD='<Your database password>'
+DB_USER='<Your database user account>'
+
+REDIS_URL='<Your redis container host address, if you followed the above guide it will be redis://127.0.0.1:6379>'
+```
+**_IMPORTANT!!_**
+Keep these settings a secret! As with any production server always follow security guidlines. Be sure to use
+strong authentication keys, never run in production with debug=true, and set up your database securely. See
+the database setup [below](#to-be-continued).
 
 ### Run the application
 
