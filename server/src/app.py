@@ -1,16 +1,13 @@
 import os
 from typing import Any, Mapping
 
-from flask import Flask, redirect, url_for, render_template
+from flask import Flask
 from flask_cors import CORS
 from flask_session import Session
 from flask_wtf.csrf import CSRFProtect, generate_csrf
 from flask.wrappers import Response
 
 from . import views
-#registering account blueprint
-from .views import account
-
 from .db import database
 from .config import BASE_DIR, Config
 
@@ -75,7 +72,7 @@ def registerRoutes(app: Flask) -> None:
     def index():
         return app.send_static_file("index.html") #redirect(url_for('auth.login'))
 
-    app.register_blueprint(views.auth)  # register URL mappings for authentication
+    app.register_blueprint(views.api)  # register URL mappings for authentication
     
 def initializeApp(app: Flask, config: Mapping[str, Any] | None) -> None:
     """ 

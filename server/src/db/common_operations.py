@@ -64,22 +64,18 @@ def insertCustomerAccount(db, data):
     db.session.commit()
 
 #inserting function for getACcountInfoByCustomerID
-def getAccountInfoByCustomerID(db: SQLAlchemy, customer_id: str) -> dict[str, Any]:
+def getAccountsByCustomerID(db: SQLAlchemy, customer_id: str) -> dict[str, Any]:
     query = """
-        SELECT
-            cu.customer_id AS ID,
-            cu.fname AS "First Name",
-            cu.lname AS "Last Name",
-            cu.dob AS "Date of Birth",
-            ca.account_id,
-            ca.balance,
-            ca.account_type
-        FROM Bank.Customer_Accounts AS ca
-        JOIN Bank.Customers AS cu ON ca.customer_id = cu.customer_id
-        WHERE cu.customer_id = :customer_id;
-    """
+            SELECT
+                ca.account_type AS type,
+                ca.account_id AS id,
+                ca.balance AS balance
+            FROM Bank.Customer_Accounts AS ca
+            NATURAL JOIN Bank.Customers AS cu
+            WHERE cu.customer_id = :_customer_id;
+            """
 
-    result = db.session.execute(text(query), {'customer_id': customer_id})
-    return result.first()._asdict()
+    result = db.session.execute(text(query), {'_customer_id': customer_id})
+    return [r._asdict() for r in result.all()]
 
 

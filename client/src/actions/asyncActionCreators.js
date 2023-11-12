@@ -21,7 +21,7 @@ const tryLogin = (credentials) => {
     formdata.append("_password", credentials.password)
 
     let config = getFormConfig('POST', formdata, 'application/json')
-    return fetch("/auth/login", config).then((response) => {
+    return fetch("/api/login", config).then((response) => {
         return response.json().then(data => ({
             data: data,
             status: response.status
@@ -32,17 +32,20 @@ const tryLogin = (credentials) => {
 const constructLoginResult = (credentials) => {
 
     let result = {
-        isValid: false,
+        isValid: true,
         usernameValidationMessage: null,
         passwordValidationMessage: null,
         loginValidationMessage: null
     }
 
-    if (!credentials.username) 
+    if (!credentials.username) {
         result.usernameValidationMessage = 'Username is required'
-    if (!credentials.password) 
+        result.isValid = false;
+    }
+    if (!credentials.password) {
         result.passwordValidationMessage = 'Password is required'
-
+        result.isValid = false;
+    }
     return result
 }
 
@@ -50,27 +53,29 @@ export const attemptLogin = (credentials) => {
     return (dispatch) => {
 
         let result = constructLoginResult(credentials);
+        if (result.isValid) {
+            try {
+                tryLogin(credentials).then(isSuccessful => {
+                    result.isValid = isSuccessful;
 
-        try {
-            tryLogin(credentials).then(isSuccessful => {
-                result.isValid = isSuccessful;
-
-                if (!result.isValid) {
-                    result.loginValidationMessage = "Unauthorized. Login Failed.";
-                    return Promise.resolve(dispatch(loginFailed(result)));
-                }
-        
-                dispatch(requestLogin(credentials));
-        
-                dispatch(loginSuccessful());
-                browserHistory.push('/accounts');
-                return Promise.resolve() ;
-            });
-        } catch(e) {
-            console.log(e);
-            result.loginValidationMessage = "An error occurred.";
-            return Promise.resolve(dispatch(loginFailed(result)));
+                    if (!result.isValid) {
+                        result.loginValidationMessage = "Unauthorized. Login Failed.";
+                        return Promise.resolve(dispatch(loginFailed(result)));
+                    }
+            
+                    dispatch(requestLogin(credentials));
+            
+                    dispatch(loginSuccessful());
+                    browserHistory.push('/accounts');
+                    return Promise.resolve() ;
+                });
+            } catch(e) {
+                console.log(e);
+                result.loginValidationMessage = "An error occurred.";
+                return Promise.resolve(dispatch(loginFailed(result)));
+            }
         }
+        return Promise.resolve(dispatch(loginFailed(result)));
     }
 }
 
@@ -85,7 +90,7 @@ export const attemptLogout = () => {
 export const fetchAccounts = () => ({
     [CALL_API]: {
         types: [actionTypes.REQUEST_ACCOUNTS, actionTypes.RECEIVE_ACCOUNTS, actionTypes.REQUEST_ACCOUNTS_FAILURE],
-        endpoint: '/accounts'
+        endpoint: '/api/accounts'
     }
 })
 
