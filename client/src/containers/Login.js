@@ -42,12 +42,16 @@ class Login extends Component {
                         errorText={passwordValidationMessage}
                     />
                 </div>
-                <RaisedButton 
-                    label="Login" 
-                    primary={true} 
-                    onClick={() => this.onLoginClick()}
-                    errorText={loginValidationMessage}
-                />
+                <div style={{color: "red"}}>
+                    <RaisedButton 
+                        label="Login" 
+                        primary={true} 
+                        onClick={() => this.onLoginClick()}
+                    />
+                    {(!passwordValidationMessage && !usernameValidationMessage) 
+                        ? loginValidationMessage : null
+                    }
+                </div>
             </div>
         )
     }

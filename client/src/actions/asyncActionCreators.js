@@ -25,21 +25,17 @@ const tryLogin = (credentials) => {
         return response.json().then(data => ({
             data: data,
             status: response.status
-        })).then(res => {
-            console.log("Status: ", res.status);
-            console.log(res.data);
-            return res.data['login'] === 'SUCCESS'
-        });
+        })).then(res => { return res.data['login'] === 'SUCCESS' });
     });
 }
 
-const constructResultObject = (credentials) => {
+const constructLoginResult = (credentials) => {
 
     let result = {
         isValid: false,
         usernameValidationMessage: null,
         passwordValidationMessage: null,
-        //loginValidationMessage: null
+        loginValidationMessage: null
     }
 
     if (!credentials.username) 
@@ -53,21 +49,28 @@ const constructResultObject = (credentials) => {
 export const attemptLogin = (credentials) => {
     return (dispatch) => {
 
-        let result = constructResultObject(credentials);
+        let result = constructLoginResult(credentials);
 
-        tryLogin(credentials).then(login_result => {
-            result.isValid = login_result;
+        try {
+            tryLogin(credentials).then(isSuccessful => {
+                result.isValid = isSuccessful;
 
-            if (!result.isValid) {
-                return Promise.resolve(dispatch(loginFailed(result)))
-            }
-    
-            dispatch(requestLogin(credentials))
-    
-            dispatch(loginSuccessful())
-            browserHistory.push('/accounts')
-            return Promise.resolve() 
-        });
+                if (!result.isValid) {
+                    result.loginValidationMessage = "Unauthorized. Login Failed.";
+                    return Promise.resolve(dispatch(loginFailed(result)));
+                }
+        
+                dispatch(requestLogin(credentials));
+        
+                dispatch(loginSuccessful());
+                browserHistory.push('/accounts');
+                return Promise.resolve() ;
+            });
+        } catch(e) {
+            console.log(e);
+            result.loginValidationMessage = "An error occurred.";
+            return Promise.resolve(dispatch(loginFailed(result)));
+        }
     }
 }
 
