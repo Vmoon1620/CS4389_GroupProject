@@ -91,25 +91,15 @@ export const getCookie = (name) => {
     return cookieValue;
 }
 
-export const getFormHeaders = (method, body) => {
+export const getFormConfig = (method, body, accept=null) => {
     const csrftoken = getCookie('csrftoken');
-    return {
+    let config = {
         headers: {
             'X-CSRF-token': csrftoken,
+            'Accept': accept,
         },
         method: method,
         body: body
     }
-}
-
-export const getJSONHeaders = (method, body) => {
-    const csrftoken = getCookie('csrftoken');
-    return {
-        headers: {
-            'content-type': 'application/json',
-            'X-CSRF-token': csrftoken,
-        },
-        method: method,
-        body: body
-    }
+    return config;
 }

@@ -1,5 +1,5 @@
 import uuid
-from flask import (Response, Request, session)
+from flask import (Response, Request, jsonify, session)
 from werkzeug.security import check_password_hash as checkHash
 from ..db import database
 from ..db.common_operations import getUserByName
@@ -7,7 +7,7 @@ from ..db.common_operations import getUserByName
 def __loginSuccess(id: uuid) -> Response:
     session.clear()
     session['user_id'] = id
-    return {'message': 'SUCCESS'}
+    return {'login': 'SUCCESS'}
 
 def __verifyLogin(username: str, password: str) -> Response:
         db = database.get()
@@ -20,7 +20,6 @@ def __verifyLogin(username: str, password: str) -> Response:
             raise Exception("Invalid Password.")
         
 def onLogin(request: Request) -> Response:
-    print([i for i in request.form])
     username = request.form['_username']
     password = request.form['_password']
     
@@ -29,4 +28,4 @@ def onLogin(request: Request) -> Response:
     except Exception as err:
         print(f'Failed login attempt. Username: {username}.\n', err)
         
-    return {'message': 'FAILED'}
+    return jsonify({'login': 'FAILED'})

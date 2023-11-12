@@ -18,12 +18,12 @@ class Login extends Component {
     }
 
     render() {
-        const { usernameValidationMessage, passwordValidationMessage } = this.props
+        const { usernameValidationMessage, passwordValidationMessage, loginValidationMessage } = this.props
         return (
             <div>
                 <h3>Secure Login</h3>
                 <h4>
-                    Enter your username and password <span style={{color: 'grey', fontSize: 'smaller'}}>(Input anything; there isn't verification yet.)</span>
+                    Enter your username and password <span style={{color: 'grey', fontSize: 'smaller'}}></span>
                 </h4>
                 
                 <div>
@@ -42,7 +42,12 @@ class Login extends Component {
                         errorText={passwordValidationMessage}
                     />
                 </div>
-                <RaisedButton label="Login" primary={true} onClick={() => this.onLoginClick()} />
+                <RaisedButton 
+                    label="Login" 
+                    primary={true} 
+                    onClick={() => this.onLoginClick()}
+                    errorText={loginValidationMessage}
+                />
             </div>
         )
     }
@@ -52,7 +57,8 @@ const mapStateToProps = state => {
     const { login } = state
     return {
         usernameValidationMessage: login.usernameValidationMessage,
-        passwordValidationMessage: login.passwordValidationMessage
+        passwordValidationMessage: login.passwordValidationMessage,
+        loginValidationMessage: login.loginValidationMessage
     }
 }
 

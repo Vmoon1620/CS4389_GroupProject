@@ -13,60 +13,61 @@ import {
 import * as actionTypes from './action_constants'
 
 import formatMoney from '../formatMoney'
-import { CALL_API, getFormHeaders } from '../middleware/api'
+import { CALL_API, getFormConfig } from '../middleware/api'
 
-const onValidateLogin = credentials => {
+const tryLogin = (credentials) => {
     let formdata = new FormData()
     formdata.append("_username", credentials.username)
     formdata.append("_password", credentials.password)
 
-    let config = getFormHeaders('POST', formdata)
-    try {
-        let isValid = fetch("/auth/login", config).then((response) => {
-            const data = JSON.parse(response.data);
-            console.log("Login response: " + data)
-            return response.data['message'] === 'SUCCESS'
+    let config = getFormConfig('POST', formdata, 'application/json')
+    return fetch("/auth/login", config).then((response) => {
+        return response.json().then(data => ({
+            data: data,
+            status: response.status
+        })).then(res => {
+            console.log("Status: ", res.status);
+            console.log(res.data);
+            return res.data['login'] === 'SUCCESS'
         });
-        return isValid === true;
-    } 
-    catch(e) {
-        console.log(e)
-        return false;
-    }
-} 
-const validateLoginRequest = credentials => {
+    });
+}
+
+const constructResultObject = (credentials) => {
 
     let result = {
         isValid: false,
         usernameValidationMessage: null,
-        passwordValidationMessage: null
+        passwordValidationMessage: null,
+        //loginValidationMessage: null
     }
 
-    if (credentials.username && credentials.password) 
-        result.isValid = onValidateLogin(credentials)
-    else {
-        if (!credentials.username) 
-            result.usernameValidationMessage = 'Username is required'
-        if (!credentials.password) 
-            result.passwordValidationMessage = 'Password is required'
-    }
+    if (!credentials.username) 
+        result.usernameValidationMessage = 'Username is required'
+    if (!credentials.password) 
+        result.passwordValidationMessage = 'Password is required'
 
     return result
 }
 
-export const attemptLogin = credentials => {
-    return dispatch => {
-        let validationResult = validateLoginRequest(credentials)
+export const attemptLogin = (credentials) => {
+    return (dispatch) => {
 
-        if (!validationResult.isValid) {
-            return Promise.resolve(dispatch(loginFailed(validationResult)))
-        }
+        let result = constructResultObject(credentials);
 
-        dispatch(requestLogin(credentials))
+        tryLogin(credentials).then(login_result => {
+            result.isValid = login_result;
 
-        dispatch(loginSuccessful())
-        browserHistory.push('/accounts')
-        return Promise.resolve()
+            if (!result.isValid) {
+                return Promise.resolve(dispatch(loginFailed(result)))
+            }
+    
+            dispatch(requestLogin(credentials))
+    
+            dispatch(loginSuccessful())
+            browserHistory.push('/accounts')
+            return Promise.resolve() 
+        });
     }
 }
 
