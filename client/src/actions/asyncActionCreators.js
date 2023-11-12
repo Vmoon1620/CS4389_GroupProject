@@ -97,7 +97,7 @@ export const fetchAccounts = () => ({
 export const fetchTransactions = accountId => ({
     [CALL_API]: {
         types: ['REQUEST_TRANSACTIONS', 'RECEIVE_TRANSACTIONS', 'REQUEST_TRANSACTIONS_FAILURE'],
-        endpoint: `/transactions?accountId=${accountId}`
+        endpoint: `api/transactions?accountId=${accountId}`
     }
 })
 
@@ -142,7 +142,7 @@ const validateCreateAccountRequest = (name, openingBalance, existingAccounts) =>
 const submitCreateAccountRequest = (name, openingBalance) => ({
     [CALL_API]: {
         types: [actionTypes.CREATE_ACCOUNT_REQUEST, actionTypes.CREATE_ACCOUNT_SUCCESS, actionTypes.CREATE_ACCOUNT_FAILED],
-        endpoint: '/accounts',
+        endpoint: 'api/accounts',
         method: 'POST',
         data: { name, balance: openingBalance }
     }
@@ -171,7 +171,7 @@ export const createAccount = (name, openingBalance) => {
 const postTransaction = (description, debit, credit, accountId) => ({
     [CALL_API]: {
         types: [actionTypes.CREATE_TRANSACTION_REQUEST, actionTypes.CREATE_TRANSACTION_SUCCESS, actionTypes.CREATE_TRANSACTION_FAILED],
-        endpoint: '/transactions',
+        endpoint: 'api/transactions',
         method: 'POST',
         data: { date: new Date(), description, debit, credit, accountId }
     }
