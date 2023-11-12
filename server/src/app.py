@@ -8,6 +8,9 @@ from flask_wtf.csrf import CSRFProtect, generate_csrf
 from flask.wrappers import Response
 
 from . import views
+#registering account blueprint
+from .views import account
+
 from .db import database
 from .config import BASE_DIR, Config
 
