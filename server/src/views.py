@@ -6,11 +6,16 @@ from flask import (abort, Blueprint, jsonify, redirect, request, session, url_fo
 from .api import login as login_handler, register as registration_handler
 from .db import database
 from .db.common_operations import getUserByID
+from .config import BASE_DIR
 
-#importing
 from .db.common_operations import getAccountInfoByCustomerID
 
-auth = Blueprint('auth', __name__, url_prefix='/auth')
+auth = Blueprint(
+    'auth', __name__, 
+    url_prefix='/auth',
+    static_folder=BASE_DIR / 'client/build',
+    static_url_path='static'
+)
 
 #adding blueprint fot account
 account = Blueprint('account', __name__, url_prefix='/account')
@@ -23,11 +28,9 @@ def formView(request: request, get_response: Any, post_response: Any) -> Any:
     else:
         return abort(HTTPStatus.METHOD_NOT_ALLOWED)
     
-@auth.route('/login', methods=('GET', 'POST'))
+@auth.route('/login', methods=(['POST']))
 def login():
-    get = lambda: 'Login Page' #render_template('auth/login.html')
-    post = lambda: login_handler.onLogin(request)
-    return formView(request, get, post)
+    return login_handler.onLogin(request)
     
 @auth.route('/register', methods=('GET', 'POST'))
 def register():

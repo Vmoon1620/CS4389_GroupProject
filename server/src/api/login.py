@@ -1,16 +1,13 @@
 import uuid
-
-from flask import (flash, session, Request, Response)
-
+from flask import (Response, Request, jsonify, session)
 from werkzeug.security import check_password_hash as checkHash
-
 from ..db import database
 from ..db.common_operations import getUserByName
 
-def __redirectLogin(id: uuid) -> Response:
+def __loginSuccess(id: uuid) -> Response:
     session.clear()
     session['user_id'] = id
-    return 'LOGIN SUCCESS' #redirect(url_for('index'))
+    return {'login': 'SUCCESS'}
 
 def __verifyLogin(username: str, password: str) -> Response:
         db = database.get()
@@ -18,7 +15,7 @@ def __verifyLogin(username: str, password: str) -> Response:
         passwdHash = str(record['password'], 'utf-8')
 
         if (checkHash(passwdHash, password)):
-            return __redirectLogin(record['id'])
+            return __loginSuccess(record['id'])
         else:
             raise Exception("Invalid Password.")
         
@@ -31,5 +28,4 @@ def onLogin(request: Request) -> Response:
     except Exception as err:
         print(f'Failed login attempt. Username: {username}.\n', err)
         
-    flash(message='Unauthorized.', category='error')
-    return 'LOGIN FAILED' #render_template('auth/login.html')
+    return jsonify({'login': 'FAILED'})

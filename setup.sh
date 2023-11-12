@@ -46,7 +46,7 @@ echo -e "[+] Server files installed.\n"
 cd ../client
 
 echo [*] Setting up client app...
-npm install
+npm install --force
 
 if [ $? -ne 0 ]; then
     echo [-] An issue installing client packages has occurred.

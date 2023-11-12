@@ -52,7 +52,7 @@ Call deactivate
 cd ../Client
 
 echo [*] Setting up client app...
-Call npm install
+Call npm install --force
 
 if %ERRORLEVEL% NEQ 0 (
     echo [-] An issue installing client packages has occurred.
