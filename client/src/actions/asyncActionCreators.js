@@ -168,12 +168,12 @@ export const createAccount = (name, openingBalance) => {
     }
 }
 
-const postTransaction = (description, debit, credit, accountId) => ({
+const postTransaction = (transaction_type, amount, accountId) => ({
     [CALL_API]: {
         types: [actionTypes.CREATE_TRANSACTION_REQUEST, actionTypes.CREATE_TRANSACTION_SUCCESS, actionTypes.CREATE_TRANSACTION_FAILED],
         endpoint: 'api/transactions',
         method: 'POST',
-        data: { date: new Date(), description, debit, credit, accountId }
+        data: { date: new Date(), transaction_type, amount, accountId }
     }
 })
 
@@ -250,11 +250,11 @@ export const transferFunds = (fromAccount, toAccount, transferAmount) => {
         }
         transferAmount = parseFloat(transferAmount)
 
-        dispatch(postTransaction(`Transfer to ${toAccount.name}`, transferAmount, null, fromAccount.id))
+        dispatch(postTransaction(`Transfer to ${toAccount.name}`, transferAmount, fromAccount.id))
 
         dispatch(debitAccount(fromAccount, transferAmount))
 
-        dispatch(postTransaction(`Transfer from ${fromAccount.name}`, null, transferAmount, toAccount.id))
+        dispatch(postTransaction(`Transfer from ${fromAccount.name}`, transferAmount, toAccount.id))
 
         dispatch(creditAccount(toAccount, transferAmount))
 
