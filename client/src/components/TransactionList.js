@@ -14,20 +14,18 @@ const TransactionList = ({
             <TableHeader displaySelectAll={false} adjustForCheckbox={false}>
                 <TableRow>
                     <TableHeaderColumn>Date</TableHeaderColumn>
-                    <TableHeaderColumn>Description</TableHeaderColumn>
-                    <TableHeaderColumn>Debit</TableHeaderColumn>
-                    <TableHeaderColumn>Credit</TableHeaderColumn>
+                    <TableHeaderColumn>Type</TableHeaderColumn>
+                    <TableHeaderColumn>Amount</TableHeaderColumn>
                 </TableRow>
             </TableHeader>
             <TableBody displayRowCheckbox={false}>
                 {
                     transactions.map(transaction => {
                         return (
-                            <TableRow key={transaction.id}>
-                                <TableRowColumn>{moment(transaction.date).fromNow()}</TableRowColumn>
-                                <TableRowColumn>{transaction.description}</TableRowColumn>
-                                <TableRowColumn>{formatDisplayAmount(transaction.debit)}</TableRowColumn>
-                                <TableRowColumn>{formatDisplayAmount(transaction.credit)}</TableRowColumn>
+                            <TableRow key={transaction.transaction_id}>
+                                <TableRowColumn>{moment(transaction.timestamp).fromNow()}</TableRowColumn>
+                                <TableRowColumn>{transaction.transaction_type}</TableRowColumn>
+                                <TableRowColumn>{formatDisplayAmount(transaction.amount)}</TableRowColumn>
                             </TableRow>
                         )
                     })
