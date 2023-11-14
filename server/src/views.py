@@ -1,7 +1,7 @@
 from http import HTTPStatus
 from typing import Any
 
-from flask import (abort, Blueprint, jsonify, redirect, request, session, url_for)
+from flask import (abort, Blueprint, jsonify, redirect, request, Response, session, url_for)
 
 from .api import (
     login as login_handler, 
@@ -26,6 +26,11 @@ def formView(request: request, get_response: Any, post_response: Any) -> Any:
 @api.route('/login', methods=(['POST']))
 def login():
     return login_handler.onLogin(request)
+
+@api.route('/logout', methods=(['POST']))
+def logout():
+    session.clear()
+    return Response(status=HTTPStatus.OK)
     
 @api.route('/register', methods=('GET', 'POST'))
 def register():

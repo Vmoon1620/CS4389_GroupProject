@@ -55,35 +55,40 @@ export const attemptLogin = (credentials) => {
         let result = constructLoginResult(credentials);
         if (result.isValid) {
             try {
+                dispatch(requestLogin(credentials));
                 tryLogin(credentials).then(isSuccessful => {
                     result.isValid = isSuccessful;
-
                     if (!result.isValid) {
                         result.loginValidationMessage = "Unauthorized. Login Failed.";
                         return Promise.resolve(dispatch(loginFailed(result)));
                     }
-            
-                    dispatch(requestLogin(credentials));
-            
-                    dispatch(loginSuccessful());
                     browserHistory.push('/accounts');
-                    return Promise.resolve() ;
+                    return Promise.resolve(dispatch(loginSuccessful()));
                 });
             } catch(e) {
                 console.log(e);
                 result.loginValidationMessage = "An error occurred.";
                 return Promise.resolve(dispatch(loginFailed(result)));
             }
+        } else {
+            return Promise.resolve(dispatch(loginFailed(result)));
         }
-        return Promise.resolve(dispatch(loginFailed(result)));
+
+        // return an empty promise while result is still pending
+        return Promise.resolve();
     }
 }
 
 export const attemptLogout = () => {
     return (dispatch) => {
         dispatch(requestLogout())
-        dispatch(logoutSuccessful())
-        browserHistory.push('/')
+        let config = getFormConfig('POST', null)
+        fetch('/api/logout', config).then((response) => {
+            dispatch(logoutSuccessful())
+            browserHistory.push('/')
+        }).catch(e => {
+            console.log(e)
+        })
     }
 }
 

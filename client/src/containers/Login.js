@@ -18,7 +18,7 @@ class Login extends Component {
     }
 
     render() {
-        const { usernameValidationMessage, passwordValidationMessage, loginValidationMessage } = this.props
+        const { usernameValidationMessage, passwordValidationMessage, loginValidationMessage, disabled } = this.props
         return (
             <div>
                 <h3>Secure Login</h3>
@@ -47,6 +47,7 @@ class Login extends Component {
                         label="Login" 
                         primary={true} 
                         onClick={() => this.onLoginClick()}
+                        disabled={disabled}
                     />
                     {(!passwordValidationMessage && !usernameValidationMessage) 
                         ? loginValidationMessage : null
@@ -62,7 +63,8 @@ const mapStateToProps = state => {
     return {
         usernameValidationMessage: login.usernameValidationMessage,
         passwordValidationMessage: login.passwordValidationMessage,
-        loginValidationMessage: login.loginValidationMessage
+        loginValidationMessage: login.loginValidationMessage,
+        disabled: login.disabled
     }
 }
 

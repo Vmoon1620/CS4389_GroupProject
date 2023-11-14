@@ -91,7 +91,7 @@ export const getCookie = (name) => {
     return cookieValue;
 }
 
-export const getFormConfig = (method, body, accept=null) => {
+export const getFormConfig = (method, body, accept=null, timeout=1000) => {
     const csrftoken = getCookie('csrftoken');
     let config = {
         headers: {
@@ -99,7 +99,7 @@ export const getFormConfig = (method, body, accept=null) => {
             'Accept': accept,
         },
         method: method,
-        body: body
+        body: body,
     }
     return config;
 }

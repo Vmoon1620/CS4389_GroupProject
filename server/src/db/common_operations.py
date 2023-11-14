@@ -55,13 +55,11 @@ def getUserByID(db: SQLAlchemy, id: str) -> dict[str, Any]:
     result = db.session.execute(text(query), {'_id': id})
     return result.first()._asdict()
 
-
-
 #inserting functions for views for Customer_Account
-def insertCustomerAccount(db, data):
-    query = 'INSERT INTO Bank.Customer_Accounts VALUES (:_account_id, :_customer_id, :_balance, :_account_type);'
-    db.session.execute(text(query), data)
-    db.session.commit()
+# def insertCustomerAccount(db, data):
+#     query = 'INSERT INTO Bank.Customer_Accounts VALUES (:_account_id, :_customer_id, :_balance, :_account_type);'
+#     db.session.execute(text(query), data)
+#     db.session.commit()
 
 #inserting function for getACcountInfoByCustomerID
 def getAccountsByCustomerID(db: SQLAlchemy, customer_id: str) -> dict[str, Any]:
