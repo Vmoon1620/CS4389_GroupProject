@@ -1,6 +1,6 @@
 from typing import Any
 
-from flask import (flash, Request)
+from flask import (jsonify, Request)
 
 from ..db.registration import Registration
 from ..db import database
@@ -35,7 +35,6 @@ def onRegister(request: Request) -> Any:
         except db.IntegrityError:
             error = "User already exists."
         else:
-            return "OK" #redirect(url_for("auth.login"))
+            return jsonify({'value': 'SUCCESS'})
         
-    flash(message=error, category='error')
-    return "BAD" #render_template('auth/register.html')
+    return jsonify({'value': 'FAILED'})

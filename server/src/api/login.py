@@ -7,7 +7,7 @@ from ..db.common_operations import getUserByName
 def __loginSuccess(id: uuid) -> Response:
     session.clear()
     session['user_id'] = id
-    return {'login': 'SUCCESS'}
+    return {'value': 'SUCCESS'}
 
 def __verifyLogin(username: str, password: str) -> Response:
         db = database.get()
@@ -28,4 +28,4 @@ def onLogin(request: Request) -> Response:
     except Exception as err:
         print(f'Failed login attempt. Username: {username}.\n', err)
         
-    return jsonify({'login': 'FAILED'})
+    return jsonify({'value': 'FAILED'})

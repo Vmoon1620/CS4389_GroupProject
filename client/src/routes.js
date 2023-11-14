@@ -7,10 +7,11 @@ import ProfilePage from './containers/ProfilePage'
 import TransactionsPage from './containers/TransactionsPage'
 import RegistrationPage from './containers/RegistrationPage'
 
-export default <Route path="/" component={App}>
+export default
+  <Route path="/" component={App}>
   <IndexRoute component={Home} />
-  <Route path="accounts" component={AccountsPage} />
-  <Route path="profile" component={ProfilePage} />
-  <Route path="accounts/:accountId/transactions" component={TransactionsPage} />
-  <Route path="register" component={RegistrationPage} />
-</Route>
+  <Route path="/accounts" component={AccountsPage} />
+  <Route path="/profile" component={ProfilePage} />
+  <Route path="/accounts/:accountId/transactions" component={TransactionsPage} />
+  <Route path="/register" component={RegistrationPage} />
+  </Route>

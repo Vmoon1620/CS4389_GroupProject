@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux'
+import { Link } from "react-router";
+
 import TextField from 'material-ui/TextField'
 import RaisedButton from 'material-ui/RaisedButton'
 import { attemptLogin } from '../actions'
@@ -52,6 +54,9 @@ class Login extends Component {
                     {(!passwordValidationMessage && !usernameValidationMessage) 
                         ? loginValidationMessage : null
                     }
+                </div><br />
+                <div>
+                    Dont have an account? Register as a new user <Link to="register">here</Link>.
                 </div>
             </div>
         )

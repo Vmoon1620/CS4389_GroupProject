@@ -7,6 +7,7 @@ import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import getMuiTheme from 'material-ui/styles/getMuiTheme'; // Import getMuiTheme to customize the theme
 import Root from './containers/Root';
 import configureStore from './store/configureStore';
+import { Router } from 'react-router-dom';
 
 injectTapEventPlugin();
 

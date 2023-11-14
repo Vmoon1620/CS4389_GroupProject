@@ -15,17 +15,13 @@ import * as actionTypes from './action_constants'
 import formatMoney from '../formatMoney'
 import { CALL_API, getFormConfig } from '../middleware/api'
 
-const tryLogin = (credentials) => {
-    let formdata = new FormData()
-    formdata.append("_username", credentials.username)
-    formdata.append("_password", credentials.password)
-
-    let config = getFormConfig('POST', formdata, 'application/json')
-    return fetch("/api/login", config).then((response) => {
+const submitForm = (url, form) => {
+    let config = getFormConfig('POST', form, 'application/json')
+    return fetch(url, config).then((response) => {
         return response.json().then(data => ({
             data: data,
             status: response.status
-        })).then(res => { return res.data['login'] === 'SUCCESS' });
+        })).then(res => { return res.data['value'] === 'SUCCESS' });
     });
 }
 
@@ -56,7 +52,12 @@ export const attemptLogin = (credentials) => {
         if (result.isValid) {
             try {
                 dispatch(requestLogin(credentials));
-                tryLogin(credentials).then(isSuccessful => {
+                
+                let form = new FormData()
+                form.append("_username", credentials.username)
+                form.append("_password", credentials.password)
+
+                submitForm("/api/login", form).then(isSuccessful => {
                     result.isValid = isSuccessful;
                     if (!result.isValid) {
                         result.loginValidationMessage = "Unauthorized. Login Failed.";
@@ -77,6 +78,25 @@ export const attemptLogin = (credentials) => {
         // return an empty promise while result is still pending
         return Promise.resolve();
     }
+}
+
+export const attemptRegister = (registration) => {
+    let form = new FormData()
+    form.append("_fname", registration.firstName)
+    form.append("_lname", registration.lastName)
+    form.append("_dob", registration.dateOfBirth)
+    form.append("_addr", registration.address)
+    form.append("_addr_type", registration.addressType)
+    form.append("_phone", registration.phoneNumber)
+    form.append("_phone_type", registration.phoneType)
+    form.append("_username", registration.username)
+    form.append("_password", registration.password)
+
+    submitForm("/api/register", form).then(isSuccessful => {
+        result.isValid = isSuccessful;
+        browserHistory.push('/');
+        return Promise.resolve();
+    });
 }
 
 export const attemptLogout = () => {
