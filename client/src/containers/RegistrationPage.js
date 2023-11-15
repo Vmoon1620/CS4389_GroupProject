@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
-import { browserHistory, IndexLink } from 'react-router'
+import { IndexLink } from 'react-router'
+import { connect } from 'react-redux'
 import { TextField, RaisedButton, SelectField, MenuItem } from 'material-ui'; // Import Material-UI components for "0.17.1"
 import { attemptRegister } from '../actions'
 
@@ -13,41 +14,91 @@ class RegistrationPage extends Component {
         phoneNumber: '',
         phoneType: '',
         username: '',
-        password: ''
+        password: '',
+        fnameError: '',
+        lnameError: '',
+        dobError: '',
+        addressError: '',
+        addrTypeError: '',
+        phoneError: '',
+        phoneTypeError: '',
+        usernameError: '',
+        passwordError: '',
     };
+
+    validateField = (name, value) => {
+        if (!value || value.length == 0) {
+            this.setState({ [name]: "*Required Field" });
+            return false;
+        } else {
+            this.setState({ [name]: null})
+            return true;
+        }
+    }
+
+    validateFields = (fields) => {
+        console.log(fields);
+        let fnameValid = this.validateField('fnameError', fields.firstName);
+        let lnameValid = this.validateField('lnameError', fields.lastName);
+        let dobValid = this.validateField('dobError', fields.dateOfBirth);
+        let addrValid = this.validateField('addressError', fields.address);
+        let addrTypeValid = this.validateField('addrTypeError', fields.addressType);
+        let phoneValid = this.validateField('phoneError', fields.phoneNumber);
+        let phoneTypeValid = this.validateField('phoneTypeError', fields.phoneType);
+        let usernameValid = this.validateField('usernameError', fields.username);
+        let passwordValid = this.validateField('passwordError', fields.password);
+
+        return fnameValid && 
+               lnameValid &&
+               dobValid &&
+               addrValid &&
+               addrTypeValid &&
+               phoneValid &&
+               phoneTypeValid &&
+               usernameValid &&
+               passwordValid;
+    }
 
     handleInputChange = (field) => (event) => {
         this.setState({ [field]: event.target.value });
     };
 
     handleRegister = () => {
-        console.log('Registration filed:', this.state);
-        attemptRegister(this.state)
+        const { dispatch } = this.props;
+        if (this.validateFields(this.state)) {
+            console.log('Registration filed:', this.state);
+            dispatch(attemptRegister(this.state))
+        }
     };
 
     render() {
+        const {disabled, error} = this.props;
         return (
             <div>
                 <TextField
                     floatingLabelText="First Name"
                     value={this.state.firstName}
                     onChange={this.handleInputChange('firstName')}
+                    errorText={this.state.fnameError}
                 /><br />
                 <TextField
                     floatingLabelText="Last Name"
                     value={this.state.lastName}
                     onChange={this.handleInputChange('lastName')}
+                    errorText={this.state.lnameError}
                 /><br />
                 <TextField
                     floatingLabelText="Birthday"
-                    hintText="mm/dd/yyyy"
+                    hintText="yyyy-mm-dd"
                     value={this.state.dateOfBirth}
                     onChange={this.handleInputChange('dateOfBirth')}
+                    errorText={this.state.dobError}
                 /><br />
                 <TextField
                     floatingLabelText="Address"
                     value={this.state.address}
                     onChange={(this.handleInputChange('address'))}
+                    errorText={this.state.addressError}
                 /><br />
                 <SelectField
                     value={this.state.addressType}
@@ -55,6 +106,7 @@ class RegistrationPage extends Component {
                     name="Address Type"
                     floatingLabelText="Address Type"
                     onChange={(event, index, value) => this.setState({ ["addressType"]: value })}
+                    errorText={this.state.addrTypeError}
                 >
                     <MenuItem value="Residential" label="Residential">Residential</MenuItem>
                     <MenuItem value="Commercial" label="Commercial">Commercial</MenuItem>
@@ -64,6 +116,7 @@ class RegistrationPage extends Component {
                     hintText="(xxx)-nnn-nnnn"
                     value={this.state.phoneNumber}
                     onChange={this.handleInputChange('phoneNumber')}
+                    errorText={this.state.phoneError}
                 /><br />
                 <SelectField
                     value={this.state.phoneType}
@@ -71,6 +124,7 @@ class RegistrationPage extends Component {
                     name="Phone Type"
                     floatingLabelText="Phone Type"
                     onChange={(event, index, value) => this.setState({ ["phoneType"]: value })}
+                    errorText={this.state.phoneTypeError}
                 >
                     <MenuItem value="Home" label="Home">Home</MenuItem>
                     <MenuItem value="Cell" label="Cell">Cell</MenuItem>
@@ -80,13 +134,18 @@ class RegistrationPage extends Component {
                     floatingLabelText="Username"
                     value={this.state.username}
                     onChange={this.handleInputChange('username')}
+                    errorText={this.state.usernameError}
                 /><br />
                 <TextField
                     floatingLabelText="Password"
                     value={this.state.password}
                     onChange={this.handleInputChange('password')}
+                    errorText={this.state.passwordError}
                 /><br />
-                <RaisedButton label="Register User" primary={true} onClick={this.handleRegister} /><br />
+                <div style={{color: "red"}}>
+                <RaisedButton label="Submit" primary={true} onClick={this.handleRegister} disabled={disabled}/><br />
+                {error}
+                </div>
                 <div>
                     Already have an account? <IndexLink to="/">login</IndexLink>
                 </div>
@@ -95,4 +154,13 @@ class RegistrationPage extends Component {
     }
 }
 
-export default RegistrationPage;
+const mapStateToProps = (state) => {
+    const { register } = state;
+    console.log(register.error);
+    return {
+        disabled: register.disabled,
+        error: register.error
+    }
+}
+
+export default connect(mapStateToProps)(RegistrationPage);

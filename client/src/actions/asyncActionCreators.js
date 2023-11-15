@@ -7,7 +7,10 @@ import {
     logoutSuccessful,
     invalidCreateAccountRequest,
     hideTransferFunds,
-    invalidTransferFundsRequest
+    invalidTransferFundsRequest,
+    registerFailed,
+    registerSuccess,
+    requestRegister
 } from './actionCreators'
 
 import * as actionTypes from './action_constants'
@@ -18,6 +21,10 @@ import { CALL_API, getFormConfig } from '../middleware/api'
 const submitForm = (url, form) => {
     let config = getFormConfig('POST', form, 'application/json')
     return fetch(url, config).then((response) => {
+        if (response.status !== 200) {
+            console.log(response)
+            return false;
+        }
         return response.json().then(data => ({
             data: data,
             status: response.status
@@ -81,22 +88,28 @@ export const attemptLogin = (credentials) => {
 }
 
 export const attemptRegister = (registration) => {
-    let form = new FormData()
-    form.append("_fname", registration.firstName)
-    form.append("_lname", registration.lastName)
-    form.append("_dob", registration.dateOfBirth)
-    form.append("_addr", registration.address)
-    form.append("_addr_type", registration.addressType)
-    form.append("_phone", registration.phoneNumber)
-    form.append("_phone_type", registration.phoneType)
-    form.append("_username", registration.username)
-    form.append("_password", registration.password)
+    return (dispatch) => {
+        let form = new FormData()
+        form.append("_fname", registration.firstName)
+        form.append("_lname", registration.lastName)
+        form.append("_dob", registration.dateOfBirth)
+        form.append("_addr", registration.address)
+        form.append("_addr_type", registration.addressType)
+        form.append("_phone", registration.phoneNumber)
+        form.append("_phone_type", registration.phoneType)
+        form.append("_username", registration.username)
+        form.append("_password", registration.password)
 
-    submitForm("/api/register", form).then(isSuccessful => {
-        result.isValid = isSuccessful;
-        browserHistory.push('/');
+        dispatch(requestRegister(registration));
+        submitForm("/api/register", form).then(isSuccessful => {
+            if (isSuccessful) {
+                browserHistory.push('/');
+                return Promise.resolve(dispatch(registerSuccess()));
+            }
+            return Promise.resolve(dispatch(registerFailed("Registration Failed.")));
+        });
         return Promise.resolve();
-    });
+    }
 }
 
 export const attemptLogout = () => {
