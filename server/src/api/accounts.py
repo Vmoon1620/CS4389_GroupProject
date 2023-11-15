@@ -19,4 +19,4 @@ def onRequestAccountInfo(request: Request):
             'balance': record['balance']
         })
         
-    return jsonify(response)
+    return jsonify(response) 
