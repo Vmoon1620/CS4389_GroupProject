@@ -168,12 +168,12 @@ Enter the same database information that you used for the database. The Flask se
 DEBUG=True
 SECRET_KEY='<Your secret key here>'
 
-DB_HOST='<Your database host address>'
-DB_PORT=<Your database port number>
-DB_PASSWORD='<Your database password>'
-DB_USER='<Your database user account>'
+DB_HOST='<Your database host address>'          // if you set up your database user with the automatic script, this will be 'localhost'
+DB_PORT=<Your database port number>             // if you set up your database user with the automatic script, this will be '3306'
+DB_PASSWORD='<Your database password>'          // if you set up your database user with the automatic script, this will be '123'
+DB_USER='<Your database user account>'          // if you set up your database user with the automatic script, this will be 'demo'
 
-REDIS_URL='<Your redis container host address, if you followed the above guide it will be redis://127.0.0.1:6379>'
+REDIS_URL='<Your redis container host address>  // if you followed the above guide it will be redis://127.0.0.1:6379>'
 ```
 **_IMPORTANT!!_**
 Keep these settings a secret! As with any production server always follow security guidlines. Be sure to use
