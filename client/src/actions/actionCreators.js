@@ -4,7 +4,7 @@ export const resetErrorMessage = () => ({
     type: types.RESET_ERROR_MESSAGE
 })
 
-export const requestLogin = credentials => ({
+export const requestLogin = (credentials) => ({
     type: types.REQUEST_LOGIN,
     credentials
 })
@@ -13,9 +13,23 @@ export const loginSuccessful = () => ({
     type: types.REQUEST_LOGIN_SUCCESS
 })
 
-export const loginFailed = validationResult => ({
+export const loginFailed = (validationResult) => ({
     type: types.REQUEST_LOGIN_FAILURE,
     validationResult
+})
+
+export const requestRegister = (registration) => ({
+    type: types.REQUEST_REGISTER,
+    registration
+}) 
+
+export const registerSuccess = () => ({
+    type: types.REQUEST_REGISTER_SUCCESS
+})
+
+export const registerFailed = (error) => ({
+    type: types.REQUEST_REGISTER_FAILED,
+    error
 })
 
 export const requestLogout = () => ({
@@ -35,8 +49,9 @@ export const receiveAccounts = (accounts) => ({
     accounts
 })
 
-export const requestTransactions = accountId => ({
-    type: types.REQUEST_TRANSACTIONS
+export const requestTransactions = (accountId) => ({
+    type: types.REQUEST_TRANSACTIONS,
+    accountId
 })
 
 export const receiveTransactions = (transactions) => ({
@@ -52,12 +67,12 @@ export const hideNewAccountForm = () => ({
     type: types.HIDE_NEW_ACCOUNTS_FORM
 })
 
-export const invalidCreateAccountRequest = validationResult => ({
+export const invalidCreateAccountRequest = (validationResult) => ({
     type: types.CREATE_ACCOUNT_VALIDATION_FAILURE,
     validationResult
 })
 
-export const accountCreated = account => ({
+export const accountCreated = (account) => ({
     type: types.ACCOUNT_CREATED,
     account
 })
@@ -70,7 +85,7 @@ export const hideTransferFunds = () => ({
     type: types.HIDE_TRANSFER_FUNDS
 })
 
-export const invalidTransferFundsRequest = validationResult => ({
+export const invalidTransferFundsRequest = (validationResult) => ({
     type: types.TRANSFER_FUNDS_VALIDATION_FAILURE,
     validationResult
 })

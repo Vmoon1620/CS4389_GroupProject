@@ -7,7 +7,10 @@ import {
     logoutSuccessful,
     invalidCreateAccountRequest,
     hideTransferFunds,
-    invalidTransferFundsRequest
+    invalidTransferFundsRequest,
+    registerFailed,
+    registerSuccess,
+    requestRegister
 } from './actionCreators'
 
 import * as actionTypes from './action_constants'
@@ -15,17 +18,17 @@ import * as actionTypes from './action_constants'
 import formatMoney from '../formatMoney'
 import { CALL_API, getFormConfig } from '../middleware/api'
 
-const tryLogin = (credentials) => {
-    let formdata = new FormData()
-    formdata.append("_username", credentials.username)
-    formdata.append("_password", credentials.password)
-
-    let config = getFormConfig('POST', formdata, 'application/json')
-    return fetch("/api/login", config).then((response) => {
+const submitForm = (url, form) => {
+    let config = getFormConfig('POST', form, 'application/json')
+    return fetch(url, config).then((response) => {
+        if (response.status !== 200) {
+            console.log(response)
+            return false;
+        }
         return response.json().then(data => ({
             data: data,
             status: response.status
-        })).then(res => { return res.data['login'] === 'SUCCESS' });
+        })).then(res => { return res.data['value'] === 'SUCCESS' });
     });
 }
 
@@ -55,35 +58,70 @@ export const attemptLogin = (credentials) => {
         let result = constructLoginResult(credentials);
         if (result.isValid) {
             try {
-                tryLogin(credentials).then(isSuccessful => {
-                    result.isValid = isSuccessful;
+                dispatch(requestLogin(credentials));
+                
+                let form = new FormData()
+                form.append("_username", credentials.username)
+                form.append("_password", credentials.password)
 
+                submitForm("/api/login", form).then(isSuccessful => {
+                    result.isValid = isSuccessful;
                     if (!result.isValid) {
                         result.loginValidationMessage = "Unauthorized. Login Failed.";
                         return Promise.resolve(dispatch(loginFailed(result)));
                     }
-            
-                    dispatch(requestLogin(credentials));
-            
-                    dispatch(loginSuccessful());
                     browserHistory.push('/accounts');
-                    return Promise.resolve() ;
+                    return Promise.resolve(dispatch(loginSuccessful()));
                 });
             } catch(e) {
                 console.log(e);
                 result.loginValidationMessage = "An error occurred.";
                 return Promise.resolve(dispatch(loginFailed(result)));
             }
+        } else {
+            return Promise.resolve(dispatch(loginFailed(result)));
         }
-        return Promise.resolve(dispatch(loginFailed(result)));
+
+        // return an empty promise while result is still pending
+        return Promise.resolve();
+    }
+}
+
+export const attemptRegister = (registration) => {
+    return (dispatch) => {
+        let form = new FormData()
+        form.append("_fname", registration.firstName)
+        form.append("_lname", registration.lastName)
+        form.append("_dob", registration.dateOfBirth)
+        form.append("_addr", registration.address)
+        form.append("_addr_type", registration.addressType)
+        form.append("_phone", registration.phoneNumber)
+        form.append("_phone_type", registration.phoneType)
+        form.append("_username", registration.username)
+        form.append("_password", registration.password)
+
+        dispatch(requestRegister(registration));
+        submitForm("/api/register", form).then(isSuccessful => {
+            if (isSuccessful) {
+                browserHistory.push('/');
+                return Promise.resolve(dispatch(registerSuccess()));
+            }
+            return Promise.resolve(dispatch(registerFailed("Registration Failed.")));
+        });
+        return Promise.resolve();
     }
 }
 
 export const attemptLogout = () => {
     return (dispatch) => {
         dispatch(requestLogout())
-        dispatch(logoutSuccessful())
-        browserHistory.push('/')
+        let config = getFormConfig('POST', null)
+        fetch('/api/logout', config).then((response) => {
+            dispatch(logoutSuccessful())
+            browserHistory.push('/')
+        }).catch(e => {
+            console.log(e)
+        })
     }
 }
 
@@ -170,12 +208,12 @@ export const createAccount = (name, openingBalance) => {
     }
 }
 
-const postTransaction = (description, debit, credit, accountId) => ({
+const postTransaction = (transaction_type, amount, accountId) => ({
     [CALL_API]: {
         types: [actionTypes.CREATE_TRANSACTION_REQUEST, actionTypes.CREATE_TRANSACTION_SUCCESS, actionTypes.CREATE_TRANSACTION_FAILED],
         endpoint: 'api/transactions',
         method: 'POST',
-        data: { date: new Date(), description, debit, credit, accountId }
+        data: { date: new Date(), transaction_type, amount, accountId }
     }
 })
 
@@ -252,11 +290,11 @@ export const transferFunds = (fromAccount, toAccount, transferAmount) => {
         }
         transferAmount = parseFloat(transferAmount)
 
-        dispatch(postTransaction(`Transfer to ${toAccount.name}`, transferAmount, null, fromAccount.id))
+        dispatch(postTransaction(`Transfer to ${toAccount.name}`, transferAmount, fromAccount.id))
 
         dispatch(debitAccount(fromAccount, transferAmount))
 
-        dispatch(postTransaction(`Transfer from ${fromAccount.name}`, null, transferAmount, toAccount.id))
+        dispatch(postTransaction(`Transfer from ${fromAccount.name}`, transferAmount, toAccount.id))
 
         dispatch(creditAccount(toAccount, transferAmount))
 

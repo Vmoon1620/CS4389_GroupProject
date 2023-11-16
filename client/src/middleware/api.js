@@ -108,7 +108,7 @@ export const getFormConfig = (method, body, accept=null) => {
             'Accept': accept,
         },
         method: method,
-        body: body
+        body: body,
     }
     return config;
 }

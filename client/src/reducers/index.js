@@ -4,6 +4,7 @@ import * as Actions from '../actions/action_constants'
 import login from './login'
 import accounts from './accounts'
 import transactions from './transactions'
+import register from './registration'
 
 const Message = (state = null, action) => {
   const { type, error } = action
@@ -19,6 +20,7 @@ const rootReducer = combineReducers({
   Message,
   routing,
   login,
+  register,
   accounts,
   transactions
 })

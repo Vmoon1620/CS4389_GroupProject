@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux'
+import { Link } from "react-router";
+
 import TextField from 'material-ui/TextField'
 import RaisedButton from 'material-ui/RaisedButton'
 import { attemptLogin } from '../actions'
@@ -18,7 +20,7 @@ class Login extends Component {
     }
 
     render() {
-        const { usernameValidationMessage, passwordValidationMessage, loginValidationMessage } = this.props
+        const { usernameValidationMessage, passwordValidationMessage, loginValidationMessage, disabled } = this.props
         return (
             <div>
                 <h3>Secure Login</h3>
@@ -47,10 +49,14 @@ class Login extends Component {
                         label="Login" 
                         primary={true} 
                         onClick={() => this.onLoginClick()}
+                        disabled={disabled}
                     />
                     {(!passwordValidationMessage && !usernameValidationMessage) 
                         ? loginValidationMessage : null
                     }
+                </div><br />
+                <div>
+                    Dont have an account? Register as a new user <Link to="register">here</Link>.
                 </div>
             </div>
         )
@@ -62,7 +68,8 @@ const mapStateToProps = state => {
     return {
         usernameValidationMessage: login.usernameValidationMessage,
         passwordValidationMessage: login.passwordValidationMessage,
-        loginValidationMessage: login.loginValidationMessage
+        loginValidationMessage: login.loginValidationMessage,
+        disabled: login.disabled
     }
 }
 
