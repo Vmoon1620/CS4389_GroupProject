@@ -31,6 +31,14 @@ Go to the website for [Node](https://nodejs.org/en/) to install the latest versi
 All recent Node version automatically come prepackaged with npm (Node Package Manager)
 required to install project dependencies.
 
+### Instal MySQL
+
+MySQL is the back end database used to store baking information for the demo project.
+Various important information such as customer info, accounts, login information, and so on
+is stored in the database. The project was tested on MySQL 8, but other versions may still work.
+Download the correct installer for MySQL for your system [here](https://dev.mysql.com/doc/refman/8.0/en/installing.html)
+and follow the istructions to setup your database.
+
 ### Install Docker
 
 Docker is used to run a [Redis](https://redis.io/) container to store user sessions.
@@ -61,6 +69,28 @@ in your docker instance. Be sure this Redis container is running when you run th
 and running the command <br>```$ redis-cli```<br> You should see the terminal run the redis interface and
 display <br>```127.0.0.1:6379>```<br> confirming that the application is running.
 
+## Set up the database
+It is important that the database is setup corretly to ensure security of customer information. These instructions
+will guide users in setting up:
+
++ Their database user
++ The database schema
++ Mock data for the project
+
+Setting up the correct permissions for database users is critical for database security. Always follow the principle
+of least privilege and give your users the minimum permissions they require to perform tasks.
+
+The following script will help users set up correct permissions for the database. Log into your database from a terminal
+in the project root directory, and run the script:<br>
+```$ source database/user.sql```
+
+Alternatively, users may manually enter these commands (be sure to remember the user and host address, you will need these later):<br>
+```
+$ DROP USER IF EXISTS '<user>'@'<host address>';
+$ CREATE USER '<user>'@'<host address>';
+$ FLUSH PRIVILEGES;
+```
+
 ## Set up project Environment
 
 This step is largely automated; simply run the installation scripts named 'setup' appropriate for
@@ -86,7 +116,7 @@ well as install the React environment and dependencies.<br>
 
 Lastly, create a local environment file, '.env' in the server directory. Any key/value pair
 put in this file will be automatically added to your environment variables on server startup.
-The Flask server needs at minimum these lines:<br>
+Enter the same database information that you used for the database. The Flask server needs at minimum these lines:<br>
 
 ```
 DEBUG=True
@@ -102,9 +132,34 @@ REDIS_URL='<Your redis container host address, if you followed the above guide i
 **_IMPORTANT!!_**
 Keep these settings a secret! As with any production server always follow security guidlines. Be sure to use
 strong authentication keys, never run in production with debug=true, and set up your database securely. See
-the database setup [below](#to-be-continued).
+the database setup [above](#set-up-the-database).
 
-### Run the application
+## Running the application
+We have provided an easy automatoc script for running the basic application below, but for
+users who wish to pass arguments to the application please start the system manually.<br>
+For manually running each part of the application, see these [instructions](#run-the-application-(manual-steps)).
+
+### Run the application (Automatic Script)
+
+This section describes an easy, automated script that users can run the application
+with for development. <br>This will compile all the UI in the client folder and build the front-end html and pages,
+then launch the web server.
+
+Run the following script from the root project folder:
+<details>
+<summary>Windows</summary>
+
+```$ .\start.bat```
+
+</details><details>
+<summary>Linux/MAC</summary>
+
+```$ bash ./start.sh```
+
+</details>
+
+The application will build the pages and start up on address 127.0.0.1 with default port 5000. (https://127.0.0.1:5000)
+### Run the application (Manual Steps)
 
 To run the application, first activate your virtual environment for python with these
 commands from project root: <br>
@@ -126,18 +181,31 @@ commands from project root: <br>
 
 </details><br>
 
-Then start the Flask server with the command:
+Build the front end pages from the client folder:
+
+```
+$ cd client
+$ npm run build
+```
+
+Then navigate back to root and start the Flask server:
 
 <details>
 <summary>Run on Windows</summary>
 
-```$ python -m server.src.app```
+```
+$ cd ..
+$ python -m server.src.app
+```
 
 </details><details>
 <summary>Run on Linux/MAC</summary>
 
-```$ python3 -m server.src.app```
+```
+$ cd ..
+$ python3 -m server.src.app
+```
 
 </details><br>
 
-## TO BE CONTINUED...
+## Final Notes
