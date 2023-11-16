@@ -6,7 +6,9 @@ from flask import (abort, Blueprint, jsonify, redirect, request, Response, sessi
 from .api import (
     login as login_handler, 
     register as registration_handler,
-    accounts as account_handler
+    accounts as account_handler,
+    #transactions
+    transactions as transaction_handler
 )
 
 from .db import database
@@ -60,3 +62,9 @@ def get_current_user():
 @api.route('/accounts', methods=['GET'])
 def accounts():
     return account_handler.onRequestAccountInfo(request)
+
+
+#path for transactions
+@api.route('/transactions', methods=['POST'])
+def transactions():
+    return transaction_handler.onRequestTransactionInfo(request)

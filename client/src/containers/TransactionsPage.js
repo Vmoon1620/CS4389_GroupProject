@@ -7,6 +7,7 @@ import FlatButton from 'material-ui/FlatButton'
 import { fetchTransactions } from '../actions'
 import formatMoney from '../formatMoney'
 import TransactionList from '../components/TransactionList'
+import { getAccount } from '../reducers/accounts'
 
 class TransactionsPage extends Component {
     componentDidMount() {
@@ -23,7 +24,6 @@ class TransactionsPage extends Component {
 
     render() {
         const { account, transactions } = this.props
-        //console.log(account)
         return (
             <div>
                 <FlatButton onClick={() => this.goToAccounts()} label="Back to accounts" primary={true} />
@@ -47,12 +47,12 @@ class TransactionsPage extends Component {
 }
 
 const mapStateToProps = (state, ownProps) => {
-    const accountId = parseInt(ownProps.params.accountId, 10)
-    const { accounts, transactions, login } = state
-
+    const accountId = getAccount().id
+    const { transactions, login } = state
+    
     return {
         accountId,
-        account: accounts.items.find(a => a.id === accountId),
+        account: getAccount(),
         transactions: transactions.items,
         authenticated: login.authenticated
     }

@@ -143,14 +143,10 @@ def __genTransactionInserts(transaction_data: list[Any]) -> list[Any]:
         transactionID = transaction_row[0]
         accountID = transaction_row[1]
         timestamp = transaction_row[2]
-
-        time = datetime.datetime.fromisoformat(timestamp).strftime("%H:%M:%S")
-        date = datetime.datetime.fromisoformat(timestamp).strftime("%Y-%m-%d")
-
         amount = Decimal(transaction_row[3])
         type = transaction_row[4]
 
-        row = [transactionID, accountID, time, date, type, amount]
+        row = [transactionID, accountID, timestamp, type, amount]
         out_rows.append(__insert(row, "Transactions"))
     return out_rows
 

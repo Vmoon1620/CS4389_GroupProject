@@ -1,5 +1,21 @@
 import * as Actions from '../actions/action_constants'
 
+let accountSelection = {
+    id: '',
+    name: '',
+    balance: 0
+}
+
+export const getAccount = () => {
+    return accountSelection;
+}
+
+export const setAccount = ({id, name, balance}) => {
+    accountSelection.id = id;
+    accountSelection.name = name;
+    accountSelection.balance = balance;
+}
+
 const accounts = (state = {
     loading: false,
     showTransferFundsButton: false,

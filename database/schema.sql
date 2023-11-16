@@ -74,11 +74,16 @@ CREATE TABLE Bank.Customer_Accounts (
     -- Cascading changes ensures accounts are fully closed and data removed if customers leave.
 );
 
+
+
 CREATE TABLE Bank.Transactions (
     transaction_id CHAR(36) NOT NULL,
     account_id CHAR(36),
-    transaction_time TIME,
-    transaction_date DATE,
+    -- proposed to merge transaction_time and transaction_date as 
+    -- transaction_timestamp TIMESTAMP
+    -- transaction_time TIME,
+    -- transaction_date DATE,
+    transaction_timestamp TIMESTAMP,
     transaction_type VARCHAR(50),
     amount DECIMAL(65, 2) NOT NULL,
     CONSTRAINT pk_transactions PRIMARY KEY (transaction_id),
