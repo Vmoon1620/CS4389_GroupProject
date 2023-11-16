@@ -73,23 +73,69 @@ display <br>```127.0.0.1:6379>```<br> confirming that the application is running
 It is important that the database is setup corretly to ensure security of customer information. These instructions
 will guide users in setting up:
 
-+ Their database user
 + The database schema
++ Their database user
 + Mock data for the project
 
+### Set up the schema
+First users must create the database schema and tables before user permissions can be set up. Run the SQL script 'schema'
+found in the database directory:<br>
+```$ source database/schema.sql```<br>
+This will create all the neccessary tables, constraints, triggers, and procedures needed.
+
+### Set up user and permissions
 Setting up the correct permissions for database users is critical for database security. Always follow the principle
 of least privilege and give your users the minimum permissions they require to perform tasks.
 
-The following script will help users set up correct permissions for the database. Log into your database from a terminal
-in the project root directory, and run the script:<br>
-```$ source database/user.sql```
+The following script will help users set up correct permissions for the database. Log into your database (to your root account) 
+from a terminal in the project root directory, and run the script:<br>
+```$ source database/user.sql```<br>
+This will automatically setup a database user named 'demo' with the password '123' on localhost 
+(meaning that user can *only* access the database from the same machine -<br>
+and therefore the applcation will only work if run on the same machine) 
+with minimal permissions to run the application.
 
-Alternatively, users may manually enter these commands (be sure to remember the user and host address, you will need these later):<br>
+Alternatively, users may manually enter these commands <br>
+(be sure to remember the user, password, and host address, you will need these later):<br>
 ```
-$ DROP USER IF EXISTS '<user>'@'<host address>';
-$ CREATE USER '<user>'@'<host address>';
+$ DROP USER IF EXISTS '<user>'@'<users_address>';
+$ CREATE USER '<user>'@'<users address>' IDENTIFIED BY '<users_password>';
+$ GRANT SELECT ON Bank.* TO '<user>'@'<users_address>';
+$ GRANT INSERT ON Bank.Users TO '<user>'@'<users_address>';
+$ GRANT INSERT ON Bank.Customers TO '<user>'@'<users_address>';
+$ GRANT INSERT ON Bank.Customer_Addresses TO '<user>'@'<users_address>';
+$ GRANT INSERT ON Bank.Customer_Phone_Numbers TO '<user>'@'<users_address>';
 $ FLUSH PRIVILEGES;
 ```
+This set of permissions only allows the user to read records in the bank database,
+and insert on records required for customer/user registration. Everything else is denied
+by default.
+
+Once permissions are set up, you can check user privileges with the command:<br>
+```$ SHOW GRANTS FOR '<user>'@'<users_address>'```<br>
+
+### Set up mock data (Optional)
+This final section details how to fill your database with mock data provided with
+the project, located in the database/"Mock Data"/ directory. Each of the .csv files
+there contain mock info for the various database tables.
+
+These files cannot be imported directly using MySQL built in features due to some
+inconsistencies and out of order tables, but we've provided an easy to use python
+script to write the insert commands for every record to a file. 
+
+Set up your project environment first before proceeding, see [here](#set-up-project-environment) for setup and [here](#run-the-application-manual-steps) for activating your virtual environment.
+
+This is required because this script uses the werkzueg utility to automatically hash and salt the passwords in the mock user data,<br> 
+which is how the actual application handles sensitive information before inserting it into the database. Users passwords would be invalid
+if attempting to insert plaintext otherwise.
+
+Once setup and your environment active, run the script:<br>
+```$ python database/populate.py <outfile>```<br>
+And the script will produce an sql script with insert statements written to the given file path.
+This may take several minutes because there are ~roughly 2500 records to process.
+
+Go to your MySQL terminal, and run the script.<br>
+```$ source <outfile>```<br> And your database will be populated.
 
 ## Set up project Environment
 
@@ -159,6 +205,7 @@ Run the following script from the root project folder:
 </details>
 
 The application will build the pages and start up on address 127.0.0.1 with default port 5000. (https://127.0.0.1:5000)
+
 ### Run the application (Manual Steps)
 
 To run the application, first activate your virtual environment for python with these
@@ -209,3 +256,16 @@ $ python3 -m server.src.app
 </details><br>
 
 ## Final Notes
+There are a few quirks worth mentioning so users can avoid troubles. Firstly,
+a known issues with many browsers prevents loading the correct certificate
+when loading webpages from a different address than the _exact_ host listed.
+This means that running the server on 'localhost:5000' for example, is different
+than running on '127.0.0.1:5000'. Even though both addresses describe the loopback
+address in networking, the application will not function properly if you run
+the server on one of those addresses, then navigate to the other address in your
+browser. If this occurs, you will most likely see the application fail to function,
+and the developer console will display an error "FAILED TO VALIDATE CERT" or a similar message.
+
+Lastly, we did not have time to implemented every features and integrate the UI components
+with the back end API. Some features present in the webpage, such as changing your user
+profile or transfering funds between accounts will not function.
