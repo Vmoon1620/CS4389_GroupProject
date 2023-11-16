@@ -62,6 +62,6 @@ def accounts():
 
 
 #path for transactions
-@api.route('/transactions', methods=['GET'])
+@api.route('/transactions', methods=['POST'])
 def transactions():
     return transaction_handler.onRequestTransactionInfo(request)

@@ -79,21 +79,32 @@ def getAccountsByCustomerID(db: SQLAlchemy, customer_id: str) -> dict[str, Any]:
     return [r._asdict() for r in result.all()]
 
 
-#inserting function for getACcountInfoByCustomerID
-def getUserTransactions(db: SQLAlchemy, customer_id: str) -> dict[str, Any]:
+#inserting function for getACcountInfoByAccountID
+def getAccountTransactions(db: SQLAlchemy, account_id: str) -> dict[str, Any]:
     query = """
-    SELECT
-            t.transaction_id AS id,
-            t.account_id AS account_id,
-            t.transaction_timestamp AS timestamp,
-            t.transaction_type AS type,
-            t.amount AS amount
-        FROM Bank.Transactions AS t
-        WHERE t.account_id IN (
-            SELECT ca.account_id
-            FROM Bank.Customer_Accounts AS ca
-            WHERE ca.customer_id = :_customer_id
-        );
-    """
-    result = db.session.execute(text(query), {'_customer_id': customer_id})
+            SELECT
+                t.transaction_id AS id,
+                t.account_id AS account_id,
+                t.transaction_timestamp AS timestamp,
+                t.transaction_type AS type,
+                t.amount AS amount
+            FROM Bank.Transactions AS t
+            WHERE t.account_id = :_account_id;
+            """
+    result = db.session.execute(text(query), {'_account_id': account_id})
     return [r._asdict() for r in result.all()]
+
+def doesUserOwnAccount(db: SQLAlchemy, customer_id: str, account_id: str) -> bool:
+    query = """
+            SELECT Count(*)
+            FROM (
+                SELECT a.customer_id AS id
+                FROM Bank.Customer_Accounts AS a
+                WHERE a.account_id = :_account_id
+            ) AS temp
+            WHERE temp.id = :_customer_id;
+            """
+    result = db.session.execute(
+        text(query), {'_customer_id': customer_id, '_account_id': account_id}
+    )
+    return result.first()._asdict()['Count(*)'] > 0

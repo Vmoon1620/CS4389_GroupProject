@@ -81,8 +81,8 @@ CREATE TABLE Bank.Transactions (
     account_id CHAR(36),
     -- proposed to merge transaction_time and transaction_date as 
     -- transaction_timestamp TIMESTAMP
-   -- transaction_time TIME,
-    --transaction_date DATE,
+    -- transaction_time TIME,
+    -- transaction_date DATE,
     transaction_timestamp TIMESTAMP,
     transaction_type VARCHAR(50),
     amount DECIMAL(65, 2) NOT NULL,
