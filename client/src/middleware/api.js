@@ -2,6 +2,22 @@ import fetch from 'isomorphic-fetch'
 
 const BASE_URL = process.env.REACT_APP_BASE_URL
 
+export const getCookie = (name) => {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            // Does this cookie string begin with the name we want?
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
 const apiResponse = response => {
     return response.json().then(json => {
         if (!response.ok) {
@@ -12,12 +28,21 @@ const apiResponse = response => {
 }
 
 const fetchOptions = (method, data) => {
+    let header = null
+    if (method !== 'GET') {
+        header = new Headers({
+            'Content-Type': 'application/json; charset=utf-8',
+            'X-CSRF-token': getCookie('csrftoken')
+        })
+    } else {
+        header = new Headers({
+            'Content-Type': 'application/json; charset=utf-8'
+        })
+    }
     return {
         method,
         body: JSON.stringify(data),
-        headers: new Headers({
-            'Content-Type': 'application/json; charset=utf-8'
-        })
+        headers: header
     }
 }
 
@@ -75,23 +100,7 @@ export default store => next => action => {
     )
 }
 
-export const getCookie = (name) => {
-    let cookieValue = null;
-    if (document.cookie && document.cookie !== '') {
-        const cookies = document.cookie.split(';');
-        for (let i = 0; i < cookies.length; i++) {
-            const cookie = cookies[i].trim();
-            // Does this cookie string begin with the name we want?
-            if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                break;
-            }
-        }
-    }
-    return cookieValue;
-}
-
-export const getFormConfig = (method, body, accept=null, timeout=1000) => {
+export const getFormConfig = (method, body, accept=null) => {
     const csrftoken = getCookie('csrftoken');
     let config = {
         headers: {
@@ -99,7 +108,7 @@ export const getFormConfig = (method, body, accept=null, timeout=1000) => {
             'Accept': accept,
         },
         method: method,
-        body: body,
+        body: body
     }
     return config;
 }

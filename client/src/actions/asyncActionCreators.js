@@ -132,10 +132,20 @@ export const fetchAccounts = () => ({
     }
 })
 
-export const fetchTransactions = accountId => ({
+export const fetchTransactions = (accountId) => ({
     [CALL_API]: {
-        types: ['REQUEST_TRANSACTIONS', 'RECEIVE_TRANSACTIONS', 'REQUEST_TRANSACTIONS_FAILURE'],
-        endpoint: `api/transactions?accountId=${accountId}`
+        types: [actionTypes.REQUEST_TRANSACTIONS, actionTypes.RECEIVE_TRANSACTIONS, actionTypes.REQUEST_TRANSACTIONS_FAILURE],
+        endpoint: '/api/transactions',
+        method: 'POST',
+        data: { "id": accountId }
+    }
+})
+
+export const fetchProfile = () => ({
+    [CALL_API]: {
+        types: [actionTypes.REQUEST_PROFILE, actionTypes.REQUEST_PROFILE_SUCCESS, actionTypes.REQUEST_PROFILE_FAILED],
+        endpoint: '/api/@me',
+        method: 'POST'
     }
 })
 

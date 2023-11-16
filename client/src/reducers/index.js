@@ -5,6 +5,7 @@ import login from './login'
 import accounts from './accounts'
 import transactions from './transactions'
 import register from './registration'
+import profile from './profile'
 
 const Message = (state = null, action) => {
   const { type, error } = action
@@ -22,7 +23,8 @@ const rootReducer = combineReducers({
   login,
   register,
   accounts,
-  transactions
+  transactions,
+  profile
 })
 
 export default rootReducer

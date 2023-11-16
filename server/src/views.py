@@ -6,7 +6,8 @@ from flask import (abort, Blueprint, jsonify, redirect, request, Response, sessi
 from .api import (
     login as login_handler, 
     register as registration_handler,
-    accounts as account_handler
+    accounts as account_handler,
+    transactions as transactions_handler
 )
 
 from .db import database
@@ -36,7 +37,7 @@ def logout():
 def register():
     return registration_handler.onRegister(request)
 
-@api.route('/@me', methods=(['GET']))
+@api.route('/@me', methods=(['POST']))
 def get_current_user():
     user_id = session.get('user_id')
 
@@ -47,16 +48,19 @@ def get_current_user():
     record = getUserByID(db, user_id)
 
     return jsonify({
-        'ID': user_id,
-        'Username': record['user'],
-        'First Name': record['first_name'],
-        'Last Name': record['last_name'],
-        'Date of Birth': record['date_of_birth'],
-        'Primary Address': record['address'],
-        'Phone Number': record['phone_number']
+        'firstName': record['first_name'],
+        'lastName': record['last_name'],
+        'dob': record['date_of_birth'],
+        'address': record['address'],
+        'phoneNumber': record['phone_number']
     })
     
 #path for account    
 @api.route('/accounts', methods=['GET'])
 def accounts():
     return account_handler.onRequestAccountInfo(request)
+
+#path for transactions    
+@api.route('/transactions', methods=['POST'])
+def transactions():
+    return transactions_handler.onRequestTransactionInfo(request)

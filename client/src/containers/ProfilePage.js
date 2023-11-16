@@ -1,12 +1,20 @@
 import React, { Component } from 'react';
 import { TextField, RaisedButton } from 'material-ui'; // Import Material-UI components for "0.17.1"
+import { connect } from 'react-redux'
+import { browserHistory } from 'react-router'
+import { fetchProfile } from '../actions'
 
 class ProfilePage extends Component {
+  componentDidMount() {
+    const { dispatch } = this.props
+    dispatch(fetchProfile())
+  }
+
   state = {
-    firstName: '',
-    lastName: '',
-    address: '',
-    phoneNumber: '',
+    firstNameField: '',
+    lastNameField: '',
+    addressField: '',
+    phoneNumberField: '',
   };
 
   handleInputChange = (field) => (event) => {
@@ -19,27 +27,28 @@ class ProfilePage extends Component {
   };
 
   render() {
+    const { firstName, lastName, address, phoneNumber } = this.props
     return (
       <div>
         <TextField
           floatingLabelText="First Name"
-          value={this.state.firstName}
-          onChange={this.handleInputChange('firstName')}
+          value={firstName}
+          onChange={this.handleInputChange('firstNameField')}
         /><br />
         <TextField
           floatingLabelText="Last Name"
-          value={this.state.lastName}
-          onChange={this.handleInputChange('lastName')}
+          value={lastName}
+          onChange={this.handleInputChange('lastNameField')}
         /><br />
         <TextField
           floatingLabelText="Address"
-          value={this.state.address}
-          onChange={this.handleInputChange('address')}
+          value={address}
+          onChange={this.handleInputChange('addressField')}
         /><br />
         <TextField
           floatingLabelText="Phone Number"
-          value={this.state.phoneNumber}
-          onChange={this.handleInputChange('phoneNumber')}
+          value={phoneNumber}
+          onChange={this.handleInputChange('phoneNumberField')}
         /><br />
         <RaisedButton label="Save Profile" primary={true} onClick={this.handleSaveProfile} />
       </div>
@@ -47,4 +56,14 @@ class ProfilePage extends Component {
   }
 }
 
-export default ProfilePage;
+const mapStateToProps = (fields) => {
+  const { profile } = fields
+  return {
+    firstName: profile.firstName,
+    lastName: profile.lastName,
+    address: profile.address,
+    phoneNumber: profile.phoneNumber
+  }
+}
+
+export default connect(mapStateToProps)(ProfilePage) 

@@ -40,6 +40,18 @@ export const logoutSuccessful = () => ({
     type: types.REQUEST_LOGOUT_SUCCESS
 })
 
+export const requestProfile = () => ({
+    type: types.REQUEST_PROFILE
+})
+
+export const profileSuccess = () => ({
+    type: types.REQUEST_PROFILE_SUCCESS
+})
+
+export const profileFailed = () => ({
+    type: types.REQUEST_PROFILE_FAILED
+})
+
 export const requestAccounts = () => ({
     type: types.REQUEST_ACCOUNTS
 })

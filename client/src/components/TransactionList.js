@@ -24,7 +24,7 @@ const TransactionList = ({
                         return (
                             <TableRow key={transaction.transaction_id}>
                                 <TableRowColumn>{moment(transaction.timestamp).fromNow()}</TableRowColumn>
-                                <TableRowColumn>{transaction.transaction_type}</TableRowColumn>
+                                <TableRowColumn>{transaction.type}</TableRowColumn>
                                 <TableRowColumn>{formatDisplayAmount(transaction.amount)}</TableRowColumn>
                             </TableRow>
                         )
