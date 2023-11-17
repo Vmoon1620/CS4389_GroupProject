@@ -165,8 +165,8 @@ put in this file will be automatically added to your environment variables on se
 Enter the same database information that you used for the database. The Flask server needs at minimum these lines:<br>
 
 ```
-DEBUG=True
-SECRET_KEY='<Your secret key here>'
+DEBUG=True                                      // Don't run with debug in actual production deployment
+SECRET_KEY='<Your secret key here>'             // This can be anything you want, make it hard to guess
 
 DB_HOST='<Your database host address>'          // if you set up your database user with the automatic script, this will be 'localhost'
 DB_PORT=<Your database port number>             // if you set up your database user with the automatic script, this will be '3306'
@@ -181,7 +181,7 @@ strong authentication keys, never run in production with debug=true, and set up 
 the database setup [above](#set-up-the-database).
 
 ## Running the application
-We have provided an easy automatoc script for running the basic application below, but for
+We have provided an easy automatic script for running the basic application below, but for
 users who wish to pass arguments to the application please start the system manually.<br>
 For manually running each part of the application, see these [instructions](#run-the-application-(manual-steps)).
 
